@@ -1,0 +1,18 @@
+[
+  {
+    "ContainingType": "WMB.Api.Controllers.OpenAIController",
+    "Method": "GetAIResponse",
+    "RelativePath": "api/OpenAI/get-response",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "WMB.Api.Models.AIRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]
