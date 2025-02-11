@@ -1,4 +1,6 @@
 using WMB.Api.Services;
+using Microsoft.EntityFrameworkCore;
+using WMB.Api.DbContext;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Register the ApplicationDbContext with the dependency injection container
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register the CrudService with the dependency injection container
+builder.Services.AddScoped<ICrudService, CrudService>();
+
+// Register the OpenAIService with the dependency injection container
 builder.Services.AddHttpClient<IOpenAIService, OpenAIService>();
 
 var app = builder.Build();
