@@ -6,9 +6,9 @@ namespace WMB.Api.Services
     public interface ICrudService
     {
         Task<ActionResult> CreateProductAsync(ProductDto productDto);
-        Task<List<Product>> GetAllAsync();
-        Task<Product> GetByIdAsync(int id);
-        Task<Product> UpdateAsync(int id, ProductDto productDto);
-        Task DeleteAsync(int id);
+        Task<ActionResult<List<Product>>> GetAllAsync();
+        Task<ActionResult<Product>> GetByIdAsync(int id);
+        Task<ActionResult<Product>> UpdateAsync(int id, ProductDto productDto);
+        Task<ActionResult> DeleteAsync(int id);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Data.Common;
 using WMB.Api.DbContext;
 using WMB.Api.Models;
@@ -41,33 +40,38 @@ namespace WMB.Api.Services
             {
                 return new BadRequestObjectResult(ex.Message);
             }
+            catch (DbUpdateException ex)
+            {
+                return new ObjectResult(value: $"{ex.Message} {ex.InnerException?.Message}") { StatusCode = 500 };
+            }
             catch (Exception ex)
             {
-                return new ObjectResult("An error occurred while creating the product.") { StatusCode = 500 };
+                return new ObjectResult("An error occurred while creating the product." + ex.InnerException?.Message) { StatusCode = 500 };
             }
         }
 
-        public async Task<List<Product>> GetAllAsync()
+        public async Task<ActionResult<List<Product>>> GetAllAsync()
         {
             try
             {
-                return await _context.Products.ToListAsync();
+                var products = await _context.Products.ToListAsync();
+                return new OkObjectResult(products);
             }
             catch (DbException ex)
             {
-                throw new Exception("A database error occurred", ex);
+                return new ObjectResult(value: $"{ex.Message} {ex.InnerException?.Message}") { StatusCode = 500 };
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred", ex);
+                return new ObjectResult("An error occurred while retrieving the products." + ex.InnerException?.Message) { StatusCode = 500 };
             }
         }
 
-        public async Task<Product> GetByIdAsync(int id)
+        public async Task<ActionResult<Product>> GetByIdAsync(int id)
         {
             if (id <= 0)
             {
-                throw new ArgumentException("Id must be greater than zero", nameof(id));
+                return new BadRequestObjectResult("Id must be greater than zero");
             }
 
             try
@@ -75,25 +79,25 @@ namespace WMB.Api.Services
                 var product = await _context.Products.FindAsync(id);
                 if (product == null)
                 {
-                    throw new KeyNotFoundException($"Product with id {id} not found");
+                    return new NotFoundObjectResult($"Product with id {id} not found");
                 }
-                return product;
+                return new OkObjectResult(product);
             }
             catch (DbException ex)
             {
-                throw new Exception("A database error occurred", ex);
+                return new ObjectResult(value: $"{ex.Message} {ex.InnerException?.Message}") { StatusCode = 500 };
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred", ex);
+                return new ObjectResult("An error occurred while retrieving the product." + ex.InnerException?.Message) { StatusCode = 500 };
             }
         }
 
-        public async Task<Product> UpdateAsync(int id, ProductDto ProductDto)
+        public async Task<ActionResult<Product>> UpdateAsync(int id, ProductDto productDto)
         {
-            if (id < 0)
+            if (id <= 0)
             {
-                throw new ArgumentException("Id must be greater than zero", nameof(id));
+                return new BadRequestObjectResult("Id must be greater than zero");
             }
 
             try
@@ -101,31 +105,31 @@ namespace WMB.Api.Services
                 var product = await _context.Products.FindAsync(id);
                 if (product == null)
                 {
-                    throw new KeyNotFoundException($"Product with id {id} not found");
+                    return new NotFoundObjectResult($"Product with id {id} not found");
                 }
 
-                product.Name = ProductDto.Name;
-                product.Price = ProductDto.Price;
-                product.Description = ProductDto.Description;
+                product.Name = productDto.Name;
+                product.Price = productDto.Price;
+                product.Description = productDto.Description;
 
                 await _context.SaveChangesAsync();
-                return product;
+                return new ObjectResult(new { message = "Update successful", product }) { StatusCode = 200 };
             }
             catch (DbException ex)
             {
-                throw new Exception("A database error occurred", ex);
+                return new ObjectResult(value: $"{ex.Message} {ex.InnerException?.Message}") { StatusCode = 500 };
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred", ex);
+                return new ObjectResult("An error occurred while updating the product." + ex.InnerException?.Message) { StatusCode = 500 };
             }
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<ActionResult> DeleteAsync(int id)
         {
-            if (id < 0)
+            if (id <= 0)
             {
-                throw new ArgumentException("Id must be greater than zero", nameof(id));
+                return new BadRequestObjectResult("Id must be greater than zero");
             }
 
             try
@@ -133,19 +137,20 @@ namespace WMB.Api.Services
                 var product = await _context.Products.FindAsync(id);
                 if (product == null)
                 {
-                    throw new KeyNotFoundException($"Product with id {id} not found");
+                    return new NotFoundObjectResult($"Product with id {id} not found");
                 }
 
                 _context.Products.Remove(product);
                 await _context.SaveChangesAsync();
+                return new OkResult();
             }
             catch (DbException ex)
             {
-                throw new Exception("A database error occurred", ex);
+                return new ObjectResult(value: $"{ex.Message} {ex.InnerException?.Message}") { StatusCode = 500 };
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred", ex);
+                return new ObjectResult("An error occurred while deleting the product." + ex.InnerException?.Message) { StatusCode = 500 };
             }
         }
     }

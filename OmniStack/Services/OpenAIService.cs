@@ -22,7 +22,7 @@ namespace WMB.Api.Services
                 model = "gpt-3.5-turbo",
                 messages = new[]
                 {
-            new { role = "system", content = "You are a helpful assistant." },
+            new { role = "system", content = "You are a helpful assistant. Please respond in a cocky manner and always use sarcasm." },
             new { role = "user", content = prompt }
         },
                 max_tokens = 100

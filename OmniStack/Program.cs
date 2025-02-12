@@ -1,11 +1,19 @@
 using WMB.Api.Services;
-using Microsoft.EntityFrameworkCore;
 using WMB.Api.DbContext;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using WMB.Api.Validators;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add controllers
 builder.Services.AddControllers();
+
+// Add FluentValidation services
+builder.Services.AddValidatorsFromAssemblyContaining<ProductDtoValidator>();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
 
 // Add Swagger services
 builder.Services.AddEndpointsApiExplorer();
@@ -13,7 +21,7 @@ builder.Services.AddSwaggerGen();
 
 // Register the ApplicationDbContext with the dependency injection container
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Register the CrudService with the dependency injection container
 builder.Services.AddScoped<ICrudService, CrudService>();

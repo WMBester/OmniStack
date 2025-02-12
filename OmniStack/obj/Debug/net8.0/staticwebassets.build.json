@@ -1,11 +1,12 @@
 {
   "Version": 1,
-  "Hash": "K65oTf1sHPGVKGhBar4WeqvdHb9moQAEhncDm5in0uA=",
+  "Hash": "BH2Jlp8QqHrLbykkn1J1BtWS4eLWGXZ3dGxmw+66l/w=",
   "Source": "WMB.Api",
   "BasePath": "_content/WMB.Api",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
   "DiscoveryPatterns": [],
-  "Assets": []
+  "Assets": [],
+  "Endpoints": []
 }
