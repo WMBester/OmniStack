@@ -15,6 +15,12 @@ namespace WMB.Api.Controllers
             _crudService = crudService;
         }
 
+        [HttpGet("health")]
+        public IActionResult Health()
+        {
+            return Ok("Healthy");
+        }
+
         [HttpPost]
         public async Task<ActionResult> CreateAsync(ProductDto productDto)
         {

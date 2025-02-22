@@ -29,8 +29,22 @@ builder.Services.AddScoped<ICrudService, CrudService>();
 // Register the OpenAIService with the dependency injection container
 builder.Services.AddHttpClient<IOpenAIService, OpenAIService>();
 
+// Add health check services
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
+
+// Apply migrations to ensure the database schema is up to date
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate();  // This will apply any pending migrations
+}
+
 app.MapControllers();  // Maps the routes defined in your controllers
+
+// Map the health check endpoint
+app.MapHealthChecks("/health");
 
 // Enable Swagger in development
 if (app.Environment.IsDevelopment())
@@ -47,4 +61,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
-app.Run();
+// Listen on 0.0.0.0:80 to be accessible from outside the container
+app.Run("http://0.0.0.0:80");

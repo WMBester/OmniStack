@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WMB.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dc123d4af5917b9179b9403963cc054da78bc6f3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a14162133061c40a54e0402427163a062fb195a4")]
 [assembly: System.Reflection.AssemblyProductAttribute("WMB.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WMB.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

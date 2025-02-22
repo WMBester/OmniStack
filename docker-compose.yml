@@ -1,0 +1,60 @@
+version: '3.9'  # Change this to 3.9 or higher for `service_healthy` condition support
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5087:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5087/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  api-test:
+    image: loadimpact/k6
+    depends_on:
+      api:
+        condition: service_healthy
+    volumes:
+      - ./k6-tests:/k6
+    entrypoint: ["k6", "run", "/k6/test-api.js"]
+    environment:
+      - K6_API_URL=http://api:80
+
+  load-test:
+    image: loadimpact/k6
+    depends_on:
+      api:
+        condition: service_healthy
+    volumes:
+      - ./k6-tests:/k6
+    entrypoint: ["k6", "run", "/k6/load-test.js"]
+    environment:
+      - K6_API_URL=http://api:80
+
+  stress-test:
+    image: loadimpact/k6
+    depends_on:
+      api:
+        condition: service_healthy
+    volumes:
+      - ./k6-tests:/k6
+    entrypoint: ["k6", "run", "/k6/stress-test.js"]
+    environment:
+      - K6_API_URL=http://api:80
+
+  performance-test:
+    image: loadimpact/k6
+    depends_on:
+      api:
+        condition: service_healthy
+    volumes:
+      - ./k6-tests:/k6
+    entrypoint: ["k6", "run", "/k6/performance-test.js"]
+    environment:
+      - K6_API_URL=http://api:80
