@@ -5,6 +5,18 @@
     "version": "1.0"
   },
   "paths": {
+    "/api/Crud/health": {
+      "get": {
+        "tags": [
+          "Crud"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Crud": {
       "post": {
         "tags": [

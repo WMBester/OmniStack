@@ -3,40 +3,20 @@
   "WorkspaceRootPath": "C:\\Dev\\OmniStack\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{5F8AC7EC-FAF9-4F54-ADCA-3D47923375E5}|k6-tests{5F8AC7EC-FAF9-4F54-ADCA-3D47923375E5}|C:\\Dev\\OmniStack\\k6-tests\\test-api.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{5F8AC7EC-FAF9-4F54-ADCA-3D47923375E5}|k6-tests{5F8AC7EC-FAF9-4F54-ADCA-3D47923375E5}|solutionrelative:k6-tests\\test-api.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+      "AbsoluteMoniker": "D:0:0:{298337B5-CA40-4ECF-A577-A20AD0FB80B7}|OmniStack\\WMB.Api.csproj|c:\\dev\\omnistack\\omnistack\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{298337B5-CA40-4ECF-A577-A20AD0FB80B7}|OmniStack\\WMB.Api.csproj|solutionrelative:omnistack\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5F8AC7EC-FAF9-4F54-ADCA-3D47923375E5}|k6-tests{5F8AC7EC-FAF9-4F54-ADCA-3D47923375E5}|C:\\Dev\\OmniStack\\k6-tests\\stress-test.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{5F8AC7EC-FAF9-4F54-ADCA-3D47923375E5}|k6-tests{5F8AC7EC-FAF9-4F54-ADCA-3D47923375E5}|solutionrelative:k6-tests\\stress-test.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5F8AC7EC-FAF9-4F54-ADCA-3D47923375E5}|k6-tests{5F8AC7EC-FAF9-4F54-ADCA-3D47923375E5}|C:\\Dev\\OmniStack\\k6-tests\\performance-test.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{5F8AC7EC-FAF9-4F54-ADCA-3D47923375E5}|k6-tests{5F8AC7EC-FAF9-4F54-ADCA-3D47923375E5}|solutionrelative:k6-tests\\performance-test.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5F8AC7EC-FAF9-4F54-ADCA-3D47923375E5}|k6-tests{5F8AC7EC-FAF9-4F54-ADCA-3D47923375E5}|C:\\Dev\\OmniStack\\k6-tests\\load-test.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{5F8AC7EC-FAF9-4F54-ADCA-3D47923375E5}|k6-tests{5F8AC7EC-FAF9-4F54-ADCA-3D47923375E5}|solutionrelative:k6-tests\\load-test.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1FC61823-8AAA-484B-8C46-62E52FC66BB8}|Docker{1FC61823-8AAA-484B-8C46-62E52FC66BB8}|C:\\Dev\\OmniStack\\docker-compose.yml||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{1FC61823-8AAA-484B-8C46-62E52FC66BB8}|Docker{1FC61823-8AAA-484B-8C46-62E52FC66BB8}|solutionrelative:docker-compose.yml||{8B382828-6202-11D1-8870-0000F87579D2}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{298337B5-CA40-4ECF-A577-A20AD0FB80B7}|OmniStack\\WMB.Api.csproj|c:\\dev\\omnistack\\omnistack\\services\\crudservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{298337B5-CA40-4ECF-A577-A20AD0FB80B7}|OmniStack\\WMB.Api.csproj|solutionrelative:omnistack\\services\\crudservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{298337B5-CA40-4ECF-A577-A20AD0FB80B7}|OmniStack\\WMB.Api.csproj|c:\\dev\\omnistack\\omnistack\\controllers\\crudcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{298337B5-CA40-4ECF-A577-A20AD0FB80B7}|OmniStack\\WMB.Api.csproj|solutionrelative:omnistack\\controllers\\crudcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{298337B5-CA40-4ECF-A577-A20AD0FB80B7}|OmniStack\\WMB.Api.csproj|c:\\dev\\omnistack\\omnistack\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{298337B5-CA40-4ECF-A577-A20AD0FB80B7}|OmniStack\\WMB.Api.csproj|solutionrelative:omnistack\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{298337B5-CA40-4ECF-A577-A20AD0FB80B7}|OmniStack\\WMB.Api.csproj|c:\\dev\\omnistack\\omnistack\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{298337B5-CA40-4ECF-A577-A20AD0FB80B7}|OmniStack\\WMB.Api.csproj|solutionrelative:omnistack\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{1FC61823-8AAA-484B-8C46-62E52FC66BB8}|Docker{1FC61823-8AAA-484B-8C46-62E52FC66BB8}|C:\\Dev\\OmniStack\\Dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{1FC61823-8AAA-484B-8C46-62E52FC66BB8}|Docker{1FC61823-8AAA-484B-8C46-62E52FC66BB8}|solutionrelative:Dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}"
+      "AbsoluteMoniker": "D:0:0:{298337B5-CA40-4ECF-A577-A20AD0FB80B7}|OmniStack\\WMB.Api.csproj|c:\\dev\\omnistack\\omnistack\\controllers\\crudcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{298337B5-CA40-4ECF-A577-A20AD0FB80B7}|OmniStack\\WMB.Api.csproj|solutionrelative:omnistack\\controllers\\crudcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -45,8 +25,8 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedHeight": 354,
-          "SelectedChildIndex": 9,
+          "DockedHeight": 322,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -54,119 +34,54 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "CrudController.cs",
-              "DocumentMoniker": "C:\\Dev\\OmniStack\\OmniStack\\Controllers\\CrudController.cs",
-              "RelativeDocumentMoniker": "OmniStack\\Controllers\\CrudController.cs",
-              "ToolTip": "C:\\Dev\\OmniStack\\OmniStack\\Controllers\\CrudController.cs",
-              "RelativeToolTip": "OmniStack\\Controllers\\CrudController.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAcwDYAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-22T12:48:48.764Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "CrudService.cs",
-              "DocumentMoniker": "C:\\Dev\\OmniStack\\OmniStack\\Services\\CrudService.cs",
-              "RelativeDocumentMoniker": "OmniStack\\Services\\CrudService.cs",
-              "ToolTip": "C:\\Dev\\OmniStack\\OmniStack\\Services\\CrudService.cs",
-              "RelativeToolTip": "OmniStack\\Services\\CrudService.cs",
-              "ViewState": "AgIAADYAAAAAAAAAAAAiwG4AAAAvAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-22T12:45:09.928Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Dev\\OmniStack\\OmniStack\\Program.cs",
-              "RelativeDocumentMoniker": "OmniStack\\Program.cs",
-              "ToolTip": "C:\\Dev\\OmniStack\\OmniStack\\Program.cs",
-              "RelativeToolTip": "OmniStack\\Program.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAQwBEAAAAXAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-22T12:36:20.082Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "Dockerfile",
-              "DocumentMoniker": "C:\\Dev\\OmniStack\\Dockerfile",
-              "RelativeDocumentMoniker": "Dockerfile",
-              "ToolTip": "C:\\Dev\\OmniStack\\Dockerfile",
-              "RelativeToolTip": "Dockerfile",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2025-02-22T12:00:08.888Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "docker-compose.yml",
-              "DocumentMoniker": "C:\\Dev\\OmniStack\\docker-compose.yml",
-              "RelativeDocumentMoniker": "docker-compose.yml",
-              "ToolTip": "C:\\Dev\\OmniStack\\docker-compose.yml",
-              "RelativeToolTip": "docker-compose.yml",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAwBsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003775|",
-              "WhenOpened": "2025-02-22T12:00:08.305Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "load-test.js",
-              "DocumentMoniker": "C:\\Dev\\OmniStack\\k6-tests\\load-test.js",
-              "RelativeDocumentMoniker": "k6-tests\\load-test.js",
-              "ToolTip": "C:\\Dev\\OmniStack\\k6-tests\\load-test.js",
-              "RelativeToolTip": "k6-tests\\load-test.js",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-02-22T11:11:39.336Z",
+              "DocumentIndex": 0,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "C:\\Dev\\OmniStack\\OmniStack\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "OmniStack\\Properties\\launchSettings.json",
+              "ToolTip": "C:\\Dev\\OmniStack\\OmniStack\\Properties\\launchSettings.json",
+              "RelativeToolTip": "OmniStack\\Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-04-16T10:01:28.89Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "performance-test.js",
-              "DocumentMoniker": "C:\\Dev\\OmniStack\\k6-tests\\performance-test.js",
-              "RelativeDocumentMoniker": "k6-tests\\performance-test.js",
-              "ToolTip": "C:\\Dev\\OmniStack\\k6-tests\\performance-test.js",
-              "RelativeToolTip": "k6-tests\\performance-test.js",
-              "ViewState": "AgIAAAIAAAAAAAAAAAAAwDQAAAAhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-02-22T11:11:40.102Z",
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Dev\\OmniStack\\OmniStack\\Program.cs",
+              "RelativeDocumentMoniker": "OmniStack\\Program.cs",
+              "ToolTip": "C:\\Dev\\OmniStack\\OmniStack\\Program.cs",
+              "RelativeToolTip": "OmniStack\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-16T09:59:19.849Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "CrudController.cs",
+              "DocumentMoniker": "C:\\Dev\\OmniStack\\OmniStack\\Controllers\\CrudController.cs",
+              "RelativeDocumentMoniker": "OmniStack\\Controllers\\CrudController.cs",
+              "ToolTip": "C:\\Dev\\OmniStack\\OmniStack\\Controllers\\CrudController.cs",
+              "RelativeToolTip": "OmniStack\\Controllers\\CrudController.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-16T09:59:05.965Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "stress-test.js",
-              "DocumentMoniker": "C:\\Dev\\OmniStack\\k6-tests\\stress-test.js",
-              "RelativeDocumentMoniker": "k6-tests\\stress-test.js",
-              "ToolTip": "C:\\Dev\\OmniStack\\k6-tests\\stress-test.js",
-              "RelativeToolTip": "k6-tests\\stress-test.js",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACsAAAAhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-02-22T11:11:40.799Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "test-api.js",
-              "DocumentMoniker": "C:\\Dev\\OmniStack\\k6-tests\\test-api.js",
-              "RelativeDocumentMoniker": "k6-tests\\test-api.js",
-              "ToolTip": "C:\\Dev\\OmniStack\\k6-tests\\test-api.js",
-              "RelativeToolTip": "k6-tests\\test-api.js",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAfAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-02-22T11:11:41.49Z",
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Dev\\OmniStack\\OmniStack\\appsettings.json",
+              "RelativeDocumentMoniker": "OmniStack\\appsettings.json",
+              "ToolTip": "C:\\Dev\\OmniStack\\OmniStack\\appsettings.json",
+              "RelativeToolTip": "OmniStack\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-04-16T10:01:02.124Z",
               "EditorCaption": ""
             }
           ]
