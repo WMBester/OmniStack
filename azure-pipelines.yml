@@ -10,7 +10,7 @@ steps:
     SonarCloud: 'SonarCloudServiceConnection' # Replace with your SonarCloud service connection name
     organization: 'morneb'
     scannerMode: 'MSBuild'
-    projectKey: 'OmniStackProject'
+    projectKey: 'Morneb_OmniStack'
     projectName: 'OmniStack'
 
 - task: UseDotNet@2
