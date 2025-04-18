@@ -24,6 +24,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8FCF317E-C9F9-4A0B-A925-8F84E7BED228}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMB.Api.Tests", "WMB.Api.Tests\WMB.Api.Tests.csproj", "{A9E11350-2697-43DA-A211-D297D87410AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,9 +38,16 @@ Global
 		{298337B5-CA40-4ECF-A577-A20AD0FB80B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{298337B5-CA40-4ECF-A577-A20AD0FB80B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{298337B5-CA40-4ECF-A577-A20AD0FB80B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9E11350-2697-43DA-A211-D297D87410AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9E11350-2697-43DA-A211-D297D87410AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9E11350-2697-43DA-A211-D297D87410AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9E11350-2697-43DA-A211-D297D87410AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A9E11350-2697-43DA-A211-D297D87410AD} = {8FCF317E-C9F9-4A0B-A925-8F84E7BED228}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {90C85BDA-6B22-418E-8DE7-5AB81444F6D1}
