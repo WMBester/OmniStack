@@ -15,3 +15,6 @@ steps:
 
 - script: dotnet build --configuration Release
   displayName: 'Build project'
+
+- script: dotnet test --configuration Release --no-build --verbosity normal
+  displayName: 'Run unit tests'
