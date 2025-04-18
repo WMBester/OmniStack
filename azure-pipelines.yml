@@ -5,6 +5,14 @@ pool:
   vmImage: 'windows-latest'
 
 steps:
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'SonarCloudServiceConnection' # Replace with your SonarCloud service connection name
+    organization: 'your-organization' # Replace with your SonarCloud organization key
+    scannerMode: 'MSBuild'
+    projectKey: 'OmniStackProject'
+    projectName: 'OmniStack'
+
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
@@ -18,3 +26,9 @@ steps:
 
 - script: dotnet test --configuration Release --no-build --verbosity normal
   displayName: 'Run unit tests'
+
+- task: SonarCloudAnalyze@1
+
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
