@@ -16,20 +16,16 @@ steps:
     packageType: 'sdk'
     version: '8.0.x'
 
-# Install SonarScanner CLI tool
+# Install SonarScanner CLI tool and Run SonarCloud Analysis (Begin -> Build/Test -> End)
 - script: |
     dotnet tool install --global dotnet-sonarscanner
     echo "##vso[task.prependpath]$HOME/.dotnet/tools"
-  displayName: 'Install SonarScanner CLI'
-
-# Run SonarCloud Analysis (Begin -> Build/Test -> End)
-- script: |
     dotnet sonarscanner begin /k:"Morneb_OmniStack" /o:"morneb" /d:sonar.login="$(SONAR_TOKEN)" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scm.disabled=true
     dotnet restore
     dotnet build --configuration $(buildConfiguration)
     dotnet test --configuration $(buildConfiguration) --no-build --verbosity normal
     dotnet sonarscanner end /d:sonar.login="$(SONAR_TOKEN)"
-  displayName: 'Run SonarCloud Analysis'
+  displayName: 'Install SonarScanner CLI and Run SonarCloud Analysis'
 
 # Run Mutation Tests with Stryker
 - script: |
