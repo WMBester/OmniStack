@@ -10,15 +10,12 @@ pool:
   vmImage: 'windows-latest'
 
 steps:
-# Install Java 17
+# Install Java 17 (required by SonarCloud)
 - task: JavaToolInstaller@0
   inputs:
     versionSpec: '17'
     jdkArchitectureOption: 'x64'
     jdkSourceOption: 'PreInstalled'
-    jdkFile: ''
-    jdkDestinationDirectory: ''
-    jdkUserInputPath: ''
   displayName: 'Install Java 17'
 
 # Install .NET 8 SDK
@@ -26,11 +23,17 @@ steps:
   inputs:
     packageType: 'sdk'
     version: '8.0.x'
+  displayName: 'Install .NET 8 SDK'
 
-# Install SonarScanner CLI tool and Run SonarCloud Analysis (Begin -> Build/Test -> End)
+# Add .NET global tools path to PATH (for SonarScanner & Stryker)
+- powershell: |
+    $dotnetTools = "$env:USERPROFILE\.dotnet\tools"
+    Write-Host "##vso[task.prependpath]$dotnetTools"
+  displayName: 'Add dotnet global tools path to PATH'
+
+# Install SonarScanner CLI & Run SonarCloud Analysis
 - script: |
     dotnet tool install --global dotnet-sonarscanner
-    echo "##vso[task.prependpath]$HOME/.dotnet/tools"
     dotnet sonarscanner begin /k:"Morneb_OmniStack" /o:"morneb" /d:sonar.login="$(SONAR_TOKEN)" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scm.disabled=true /d:sonar.scanner.skipJreProvisioning=true
     dotnet restore
     dotnet build --configuration $(buildConfiguration)
@@ -38,15 +41,11 @@ steps:
     dotnet sonarscanner end /d:sonar.login="$(SONAR_TOKEN)"
   displayName: 'Install SonarScanner CLI and Run SonarCloud Analysis'
 
-# Run Mutation Tests with Stryker
+# ✅ Run Mutation Tests with Stryker
 - script: |
-    echo "##vso[task.prependpath]$HOME/.dotnet/tools"
-    dotnet tool install -g dotnet-stryker
+    dotnet tool install --global dotnet-stryker
     dotnet stryker --project WMB.Api.Tests/WMB.Api.Tests.csproj --reporter html --reporter progress --threshold-break 80
   displayName: 'Run mutation tests with Stryker'
-  env:
-    DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
-    PATH: $(Agent.ToolsDirectory)/dotnet:$(PATH)
 
 # Publish Stryker HTML Report
 - task: PublishPipelineArtifact@1
