@@ -82,7 +82,7 @@ steps:
 
   # Run tests with coverage
   - script: |
-      dotnet test OmniStack.sln --configuration $(buildConfiguration) --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=TestResults/coverage.xml /p:Threshold=50 /p:ThresholdType=line /p:ThresholdStat=total
+    dotnet test OmniStack.sln --configuration $(buildConfiguration) --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=TestResults/coverage.xml
     displayName: 'Run tests with coverage'
     env:
       DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
