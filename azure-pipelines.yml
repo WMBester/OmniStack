@@ -10,114 +10,114 @@ pool:
   vmImage: 'windows-latest'
 
 steps:
-# Install Java 17 (required by SonarCloud)
-- task: JavaToolInstaller@0
-  inputs:
-    versionSpec: '17'
-    jdkArchitectureOption: 'x64'
-    jdkSourceOption: 'PreInstalled'
-  displayName: 'Install Java 17'
+  # Install Java 17 (required by SonarCloud)
+  - task: JavaToolInstaller@0
+    inputs:
+      versionSpec: '17'
+      jdkArchitectureOption: 'x64'
+      jdkSourceOption: 'PreInstalled'
+    displayName: 'Install Java 17'
 
-# Install .NET 8 SDK
-- task: UseDotNet@2
-  inputs:
-    packageType: 'sdk'
-    version: '8.0.x'
-  displayName: 'Install .NET 8 SDK'
+  # Install .NET 8 SDK
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '8.0.x'
+    displayName: 'Install .NET 8 SDK'
 
-# Add .NET global tools path to PATH
-- powershell: |
-    $dotnetTools = "$env:USERPROFILE\.dotnet\tools"
-    Write-Host "##vso[task.prependpath]$dotnetTools"
-  displayName: 'Add dotnet global tools path to PATH'
+  # Add .NET global tools path to PATH
+  - powershell: |
+      $dotnetTools = "$env:USERPROFILE\.dotnet\tools"
+      Write-Host "##vso[task.prependpath]$dotnetTools"
+    displayName: 'Add dotnet global tools path to PATH'
 
-# Restore projects
-- script: |
-    dotnet restore OmniStack.sln
-  displayName: 'Restore projects'
+  # Restore projects
+  - script: |
+      dotnet restore OmniStack.sln
+    displayName: 'Restore projects'
 
-# Build projects
-- script: |
-    dotnet build OmniStack.sln --configuration $(buildConfiguration)
-  displayName: 'Build projects'
+  # Build projects
+  - script: |
+      dotnet build OmniStack.sln --configuration $(buildConfiguration)
+    displayName: 'Build projects'
 
-# Run tests with coverage
-- script: |
-    dotnet test OmniStack.sln --configuration $(buildConfiguration) --verbosity normal --settings coverlet.runsettings
-  displayName: 'Run tests with coverage'
+  # Run tests with coverage
+  - script: |
+      dotnet test OmniStack.sln --configuration $(buildConfiguration) --verbosity normal --settings coverlet.runsettings
+    displayName: 'Run tests with coverage'
 
-# List TestResults directory contents for debugging
-- powershell: |
-    Get-ChildItem -Path "$(Build.SourcesDirectory)/TestResults" -Recurse
-  displayName: 'List TestResults directory contents'
+  # List TestResults directory contents for debugging
+  - powershell: |
+      Get-ChildItem -Path "$(Build.SourcesDirectory)/TestResults" -Recurse
+    displayName: 'List TestResults directory contents'
 
-# List entire WMB.Api.Tests directory contents for debugging
-- powershell: |
-    Get-ChildItem -Path "$(Build.SourcesDirectory)/WMB.Api.Tests" -Recurse
-  displayName: 'List WMB.Api.Tests directory contents'
+  # List entire WMB.Api.Tests directory contents for debugging
+  - powershell: |
+      Get-ChildItem -Path "$(Build.SourcesDirectory)/WMB.Api.Tests" -Recurse
+    displayName: 'List WMB.Api.Tests directory contents'
 
-# Install SonarScanner CLI
-- script: |
-    dotnet tool install --global dotnet-sonarscanner
-  displayName: 'Install SonarScanner CLI'
-  env:
-    DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
-    PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
+  # Install SonarScanner CLI
+  - script: |
+      dotnet tool install --global dotnet-sonarscanner
+    displayName: 'Install SonarScanner CLI'
+    env:
+      DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
+      PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
 
-# SonarCloud Begin Analysis
-- script: |
-    dotnet sonarscanner begin /k:"Morneb_OmniStack" /o:"morneb" /d:sonar.login="$(SONAR_TOKEN)" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scm.disabled=true /d:sonar.scanner.skipJreProvisioning=true /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.opencover.xml" /d:sonar.exclusions="WMB.Api.Tests/**,k6-tests/**,azure-pipelines.yml"
-  displayName: 'SonarCloud Begin Analysis'
-  env:
-    DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
-    PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
+  # SonarCloud Begin Analysis
+  - script: |
+      dotnet sonarscanner begin /k:"Morneb_OmniStack" /o:"morneb" /d:sonar.login="$(SONAR_TOKEN)" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scm.disabled=true /d:sonar.scanner.skipJreProvisioning=true /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.opencover.xml" /d:sonar.exclusions="WMB.Api.Tests/**,k6-tests/**,azure-pipelines.yml"
+    displayName: 'SonarCloud Begin Analysis'
+    env:
+      DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
+      PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
 
-# Build projects
-- script: |
-    dotnet build OmniStack.sln --configuration $(buildConfiguration)
-  displayName: 'Build projects'
-  env:
-    DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
-    PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
+  # Build projects
+  - script: |
+      dotnet build OmniStack.sln --configuration $(buildConfiguration)
+    displayName: 'Build projects'
+    env:
+      DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
+      PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
 
-# Run tests with coverage
-- script: |
-    dotnet test OmniStack.sln --configuration $(buildConfiguration) --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=TestResults/coverage.xml /p:Threshold=50 /p:ThresholdType=line /p:ThresholdStat=total
-  displayName: 'Run tests with coverage'
-  env:
-    DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
-    PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
+  # Run tests with coverage
+  - script: |
+      dotnet test OmniStack.sln --configuration $(buildConfiguration) --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=TestResults/coverage.xml /p:Threshold=50 /p:ThresholdType=line /p:ThresholdStat=total
+    displayName: 'Run tests with coverage'
+    env:
+      DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
+      PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
 
-# SonarCloud End Analysis
-- script: |
-    dotnet sonarscanner end /d:sonar.login="$(SONAR_TOKEN)"
-  displayName: 'SonarCloud End Analysis'
-  env:
-    DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
-    PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
+  # SonarCloud End Analysis
+  - script: |
+      dotnet sonarscanner end /d:sonar.login="$(SONAR_TOKEN)"
+    displayName: 'SonarCloud End Analysis'
+    env:
+      DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
+      PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
 
-# Publish Code Coverage Results
-- task: PublishCodeCoverageResults@2
-  inputs:
-    codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/**/coverage.opencover.xml'
-    reportDirectory: '$(Build.SourcesDirectory)/TestResults'
-    failIfCoverageEmpty: true
+  # Publish Code Coverage Results
+  - task: PublishCodeCoverageResults@2
+    inputs:
+      codeCoverageTool: 'Cobertura'
+      summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/**/coverage.opencover.xml'
+      reportDirectory: '$(Build.SourcesDirectory)/TestResults'
+      failIfCoverageEmpty: true
 
-# Run Mutation Tests with Stryker
-- script: |
-    dotnet tool install --global dotnet-stryker
-    dotnet stryker --solution ../OmniStack.sln --reporter html --reporter progress --threshold-high 80 --threshold-low 60
-  displayName: 'Run mutation tests with Stryker'
-  workingDirectory: 'WMB.Api.Tests'
-  env:
-    DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
-    PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
+  # Run Mutation Tests with Stryker
+  - script: |
+      dotnet tool install --global dotnet-stryker
+      dotnet stryker --solution ../OmniStack.sln --reporter html --reporter progress --threshold-high 80 --threshold-low 60
+    displayName: 'Run mutation tests with Stryker'
+    workingDirectory: 'WMB.Api.Tests'
+    env:
+      DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
+      PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
 
-# Publish Stryker HTML Report
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: 'WMB.Api.Tests/StrykerOutput'
-    artifact: 'StrykerReport'
-    publishLocation: 'pipeline'
-  displayName: 'Publish Stryker mutation testing report'
+  # Publish Stryker HTML Report
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: 'WMB.Api.Tests/StrykerOutput'
+      artifact: 'StrykerReport'
+      publishLocation: 'pipeline'
+    displayName: 'Publish Stryker mutation testing report'
