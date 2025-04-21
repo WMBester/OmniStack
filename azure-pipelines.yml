@@ -1,5 +1,5 @@
 trigger:
-  - main
+  - '*'
 
 pool:
   vmImage: 'windows-latest'
@@ -31,7 +31,7 @@ steps:
 
 - script: |
     dotnet tool install -g dotnet-stryker
-    dotnet stryker --project-file WMB.Api.Tests/WMB.Api.Tests.csproj --reporters "html;console" --threshold-break 80
+    dotnet stryker --project WMB.Api.Tests/WMB.Api.Tests.csproj --reporters "html;console" --threshold-break 80
   displayName: 'Run mutation tests with Stryker'
 
 - task: PublishPipelineArtifact@1
