@@ -16,6 +16,9 @@ steps:
     versionSpec: '17'
     jdkArchitectureOption: 'x64'
     jdkSourceOption: 'PreInstalled'
+    jdkFile: ''
+    jdkDestinationDirectory: ''
+    jdkUserInputPath: ''
   displayName: 'Install Java 17'
 
 # Install .NET 8 SDK
@@ -24,25 +27,26 @@ steps:
     packageType: 'sdk'
     version: '8.0.x'
 
-# Add .NET tools path to environment for global tools
-- script: echo "##vso[task.prependpath]$(Agent.ToolsDirectory)/dotnet/tools"
-  displayName: 'Add .NET Global Tools to PATH'
-
-# Install SonarScanner CLI tool and Run SonarCloud Analysis
+# Install SonarScanner CLI tool and Run SonarCloud Analysis (Begin -> Build/Test -> End)
 - script: |
     dotnet tool install --global dotnet-sonarscanner
+    echo "##vso[task.prependpath]$HOME/.dotnet/tools"
     dotnet sonarscanner begin /k:"Morneb_OmniStack" /o:"morneb" /d:sonar.login="$(SONAR_TOKEN)" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scm.disabled=true /d:sonar.scanner.skipJreProvisioning=true
     dotnet restore
     dotnet build --configuration $(buildConfiguration)
     dotnet test --configuration $(buildConfiguration) --no-build --verbosity normal
     dotnet sonarscanner end /d:sonar.login="$(SONAR_TOKEN)"
-  displayName: 'Run SonarCloud Analysis'
+  displayName: 'Install SonarScanner CLI and Run SonarCloud Analysis'
 
 # Run Mutation Tests with Stryker
 - script: |
-    dotnet tool install --global dotnet-stryker
-    dotnet-stryker --project WMB.Api.Tests/WMB.Api.Tests.csproj --reporter html --reporter progress --threshold-break 80
+    echo "##vso[task.prependpath]$HOME/.dotnet/tools"
+    dotnet tool install -g dotnet-stryker
+    dotnet stryker --project WMB.Api.Tests/WMB.Api.Tests.csproj --reporter html --reporter progress --threshold-break 80
   displayName: 'Run mutation tests with Stryker'
+  env:
+    DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
+    PATH: $(Agent.ToolsDirectory)/dotnet:$(PATH)
 
 # Publish Stryker HTML Report
 - task: PublishPipelineArtifact@1
