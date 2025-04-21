@@ -1,48 +1,46 @@
 trigger:
   - '*'
 
+variables:
+  buildConfiguration: 'Release'
+  - group: SonarCloudSecrets
+
 pool:
   vmImage: 'windows-latest'
 
 steps:
-- task: SonarCloudPrepare@2
-  inputs:
-    SonarCloud: 'SonarCloudServiceConnection' 
-    organization: 'morneb'
-    scannerMode: 'MSBuild'
-    projectKey: 'Morneb_OmniStack'
-    projectName: 'OmniStack'
-    extraProperties: |
-      sonar.scm.disabled=true
-
+# Install .NET 8 SDK
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
     version: '8.0.x'
 
-- script: dotnet restore
-  displayName: 'Restore dependencies'
+# Install SonarScanner CLI tool
+- script: |
+    dotnet tool install --global dotnet-sonarscanner
+    echo "##vso[task.prependpath]$HOME/.dotnet/tools"
+  displayName: 'Install SonarScanner CLI'
 
-- script: dotnet build --configuration Release
-  displayName: 'Build project'
+# Run SonarCloud Analysis (Begin -> Build/Test -> End)
+- script: |
+    dotnet sonarscanner begin /k:"Morneb_OmniStack" /o:"morneb" /d:sonar.login="$(SONAR_TOKEN)" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scm.disabled=true
+    dotnet restore
+    dotnet build --configuration $(buildConfiguration)
+    dotnet test --configuration $(buildConfiguration) --no-build --verbosity normal
+    dotnet sonarscanner end /d:sonar.login="$(SONAR_TOKEN)"
+  displayName: 'Run SonarCloud Analysis'
 
-- script: dotnet test --configuration Release --no-build --verbosity normal
-  displayName: 'Run unit tests'
-
+# Run Mutation Tests with Stryker
 - script: |
     dotnet tool install -g dotnet-stryker
-    dotnet stryker --project WMB.Api.Tests/WMB.Api.Tests.csproj --reporters "html;console" --threshold-break 80
+    echo "##vso[task.prependpath]$HOME/.dotnet/tools"
+    dotnet stryker --project WMB.Api.Tests/WMB.Api.Tests.csproj --reporter html --reporter progress --threshold-break 80
   displayName: 'Run mutation tests with Stryker'
 
+# Publish Stryker HTML Report
 - task: PublishPipelineArtifact@1
   inputs:
     targetPath: 'StrykerOutput'
     artifact: 'StrykerReport'
     publishLocation: 'pipeline'
   displayName: 'Publish Stryker mutation testing report'
-
-- task: SonarCloudAnalyze@2
-
-- task: SonarCloudPublish@2
-  inputs:
-    pollingTimeoutSec: '300'
