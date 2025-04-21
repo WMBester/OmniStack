@@ -2,6 +2,8 @@
 
 [![Build Status](https://dev.azure.com/Morneb/OmniStack/_apis/build/status%2FWMBester.OmniStack?branchName=main)](https://dev.azure.com/Morneb/OmniStack/_build/latest?definitionId=1&branchName=main)
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Morneb_OmniStack&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Morneb_OmniStack)
+
 OmniStack is a comprehensive showcase project designed to demonstrate advanced skills in backend API development, AI integration, validation, testing, and DevOps. This project is structured to highlight best practices and modern engineering approaches, making it an ideal portfolio piece.
 
 ## Project Overview

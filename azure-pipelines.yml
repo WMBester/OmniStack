@@ -5,13 +5,15 @@ pool:
   vmImage: 'windows-latest'
 
 steps:
-- task: SonarCloudPrepare@1
+- task: SonarCloudPrepare@2
   inputs:
-    SonarCloud: 'SonarCloudServiceConnection' # Replace with your SonarCloud service connection name
+    SonarCloud: 'SonarCloudServiceConnection' 
     organization: 'morneb'
     scannerMode: 'MSBuild'
     projectKey: 'Morneb_OmniStack'
     projectName: 'OmniStack'
+    extraProperties: |
+      sonar.scm.disabled=true
 
 - task: UseDotNet@2
   inputs:
@@ -27,8 +29,20 @@ steps:
 - script: dotnet test --configuration Release --no-build --verbosity normal
   displayName: 'Run unit tests'
 
-- task: SonarCloudAnalyze@1
+- script: |
+    dotnet tool install -g dotnet-stryker
+    dotnet stryker --project-file WMB.Api.Tests/WMB.Api.Tests.csproj --reporters "html;console" --threshold-break 80
+  displayName: 'Run mutation tests with Stryker'
 
-- task: SonarCloudPublish@1
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: 'StrykerOutput'
+    artifact: 'StrykerReport'
+    publishLocation: 'pipeline'
+  displayName: 'Publish Stryker mutation testing report'
+
+- task: SonarCloudAnalyze@2
+
+- task: SonarCloudPublish@2
   inputs:
     pollingTimeoutSec: '300'
