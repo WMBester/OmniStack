@@ -10,6 +10,17 @@ pool:
   vmImage: 'windows-latest'
 
 steps:
+# Install Java 17
+- task: JavaToolInstaller@0
+  inputs:
+    versionSpec: '17'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
+    jdkFile: ''
+    jdkDestinationDirectory: ''
+    jdkUserInputPath: ''
+  displayName: 'Install Java 17'
+
 # Install .NET 8 SDK
 - task: UseDotNet@2
   inputs:
