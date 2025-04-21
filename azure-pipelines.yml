@@ -2,8 +2,9 @@ trigger:
   - '*'
 
 variables:
-  buildConfiguration: 'Release'
   - group: SonarCloudSecrets
+  - name: buildConfiguration
+    value: 'Release'
 
 pool:
   vmImage: 'windows-latest'
