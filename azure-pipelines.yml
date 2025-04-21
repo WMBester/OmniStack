@@ -49,6 +49,11 @@ steps:
     Get-ChildItem -Path "$(Build.SourcesDirectory)/TestResults" -Recurse
   displayName: 'List TestResults directory contents'
 
+# List entire WMB.Api.Tests directory contents for debugging
+- powershell: |
+    Get-ChildItem -Path "$(Build.SourcesDirectory)/WMB.Api.Tests" -Recurse
+  displayName: 'List WMB.Api.Tests directory contents'
+
 # Publish Code Coverage Results
 - task: PublishCodeCoverageResults@1
   inputs:
