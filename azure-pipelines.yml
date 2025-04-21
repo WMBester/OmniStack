@@ -1,48 +1,63 @@
 trigger:
-  - main
+  - '*'
+
+variables:
+  - group: SonarCloudSecrets
+  - name: buildConfiguration
+    value: 'Release'
 
 pool:
   vmImage: 'windows-latest'
 
 steps:
-- task: SonarCloudPrepare@2
+# Install Java 17 (required by SonarCloud)
+- task: JavaToolInstaller@0
   inputs:
-    SonarCloud: 'SonarCloudServiceConnection' 
-    organization: 'morneb'
-    scannerMode: 'MSBuild'
-    projectKey: 'Morneb_OmniStack'
-    projectName: 'OmniStack'
-    extraProperties: |
-      sonar.scm.disabled=true
+    versionSpec: '17'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
+  displayName: 'Install Java 17'
 
+# Install .NET 8 SDK
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
     version: '8.0.x'
+  displayName: 'Install .NET 8 SDK'
 
-- script: dotnet restore
-  displayName: 'Restore dependencies'
+# Add .NET global tools path to PATH
+- powershell: |
+    $dotnetTools = "$env:USERPROFILE\.dotnet\tools"
+    Write-Host "##vso[task.prependpath]$dotnetTools"
+  displayName: 'Add dotnet global tools path to PATH'
 
-- script: dotnet build --configuration Release
-  displayName: 'Build project'
-
-- script: dotnet test --configuration Release --no-build --verbosity normal
-  displayName: 'Run unit tests'
-
+# Install SonarScanner CLI & Run SonarCloud Analysis
 - script: |
-    dotnet tool install -g dotnet-stryker
-    dotnet stryker --project-file WMB.Api.Tests/WMB.Api.Tests.csproj --reporters "html;console" --threshold-break 80
-  displayName: 'Run mutation tests with Stryker'
+    dotnet tool install --global dotnet-sonarscanner
+    dotnet sonarscanner begin /k:"Morneb_OmniStack" /o:"morneb" /d:sonar.login="$(SONAR_TOKEN)" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scm.disabled=true /d:sonar.scanner.skipJreProvisioning=true /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+    dotnet restore OmniStack.sln
+    dotnet build OmniStack.sln --configuration $(buildConfiguration)
+    dotnet test OmniStack.sln --configuration $(buildConfiguration) --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/
+    dotnet sonarscanner end /d:sonar.login="$(SONAR_TOKEN)"
+  displayName: 'Install SonarScanner CLI and Run SonarCloud Analysis'
+  env:
+    DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
+    PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
 
+# Run Mutation Tests with Stryker
+- script: |
+    dotnet tool install --global dotnet-stryker
+    dotnet stryker --solution ../OmniStack.sln --reporter html --reporter progress --threshold-high 80 --threshold-low 60
+  displayName: 'Run mutation tests with Stryker'
+  workingDirectory: 'WMB.Api.Tests'
+  env:
+    DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
+    PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
+
+# Publish Stryker HTML Report
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: 'StrykerOutput'
+    targetPath: 'WMB.Api.Tests/StrykerOutput'
     artifact: 'StrykerReport'
     publishLocation: 'pipeline'
   displayName: 'Publish Stryker mutation testing report'
-
-- task: SonarCloudAnalyze@2
-
-- task: SonarCloudPublish@2
-  inputs:
-    pollingTimeoutSec: '300'
