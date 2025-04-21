@@ -25,7 +25,7 @@ steps:
     version: '8.0.x'
   displayName: 'Install .NET 8 SDK'
 
-# Add .NET global tools path to PATH (for SonarScanner & Stryker)
+# Add .NET global tools path to PATH
 - powershell: |
     $dotnetTools = "$env:USERPROFILE\.dotnet\tools"
     Write-Host "##vso[task.prependpath]$dotnetTools"
@@ -47,8 +47,9 @@ steps:
 # Run Mutation Tests with Stryker
 - script: |
     dotnet tool install --global dotnet-stryker
-    dotnet stryker --project WMB.Api.Tests/WMB.Api.Tests.csproj --solution OmniStack.sln --reporter html --reporter progress --threshold-high 80 --threshold-low 60
+    dotnet stryker --solution ../OmniStack.sln --reporter html --reporter progress --threshold-high 80 --threshold-low 60
   displayName: 'Run mutation tests with Stryker'
+  workingDirectory: 'WMB.Api.Tests'
   env:
     DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
     PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
