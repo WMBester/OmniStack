@@ -56,12 +56,42 @@ steps:
     Get-ChildItem -Path "$(Build.SourcesDirectory)/WMB.Api.Tests" -Recurse
   displayName: 'List WMB.Api.Tests directory contents'
 
-# Install SonarScanner CLI & Run SonarCloud Analysis
+# Install SonarScanner CLI
 - script: |
     dotnet tool install --global dotnet-sonarscanner
+  displayName: 'Install SonarScanner CLI'
+  env:
+    DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
+    PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
+
+# SonarCloud Begin Analysis
+- script: |
     dotnet sonarscanner begin /k:"Morneb_OmniStack" /o:"morneb" /d:sonar.login="$(SONAR_TOKEN)" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scm.disabled=true /d:sonar.scanner.skipJreProvisioning=true /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.opencover.xml" /d:sonar.exclusions="WMB.Api.Tests/**,k6-tests/**,azure-pipelines.yml"
+  displayName: 'SonarCloud Begin Analysis'
+  env:
+    DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
+    PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
+
+# Build projects
+- script: |
+    dotnet build OmniStack.sln --configuration $(buildConfiguration)
+  displayName: 'Build projects'
+  env:
+    DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
+    PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
+
+# Run tests with coverage
+- script: |
+    dotnet test OmniStack.sln --configuration $(buildConfiguration) --verbosity normal --settings coverlet.runsettings
+  displayName: 'Run tests with coverage'
+  env:
+    DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
+    PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
+
+# SonarCloud End Analysis
+- script: |
     dotnet sonarscanner end /d:sonar.login="$(SONAR_TOKEN)"
-  displayName: 'Install SonarScanner CLI and Run SonarCloud Analysis'
+  displayName: 'SonarCloud End Analysis'
   env:
     DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
     PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
