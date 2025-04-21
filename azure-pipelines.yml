@@ -47,7 +47,7 @@ steps:
 # Run Mutation Tests with Stryker
 - script: |
     dotnet tool install --global dotnet-stryker
-    dotnet stryker --project WMB.Api.Tests/WMB.Api.Tests.csproj --reporter html --reporter progress --threshold-high 80 --threshold-low 60
+    dotnet stryker --project WMB.Api.Tests/WMB.Api.Tests.csproj --solution OmniStack.sln --reporter html --reporter progress --threshold-high 80 --threshold-low 60
   displayName: 'Run mutation tests with Stryker'
   env:
     DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
@@ -56,7 +56,7 @@ steps:
 # Publish Stryker HTML Report
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: 'StrykerOutput'
+    targetPath: 'WMB.Api.Tests/StrykerOutput'
     artifact: 'StrykerReport'
     publishLocation: 'pipeline'
   displayName: 'Publish Stryker mutation testing report'
