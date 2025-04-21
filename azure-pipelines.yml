@@ -44,6 +44,14 @@ steps:
     DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
     PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
 
+# Publish Code Coverage Results
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/coverage.opencover.xml'
+    reportDirectory: '$(Build.SourcesDirectory)/TestResults'
+    failIfCoverageEmpty: true
+
 # Run Mutation Tests with Stryker
 - script: |
     dotnet tool install --global dotnet-stryker
