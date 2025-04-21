@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <!-- Exclude test projects and generated code -->
+          <Exclude>
+            [*]WMB.Api.Tests*
+            [*]k6-tests*
+            [*]Migrations*
+            [*]obj*
+            [*]bin*
+          </Exclude>
+          <!-- Include only production code -->
+          <Include>
+            [*]OmniStack*
+          </Include>
+          <Format>opencover</Format>
+          <OutputDirectory>./TestResults</OutputDirectory>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>
