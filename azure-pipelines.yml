@@ -95,7 +95,7 @@ steps:
   displayName: 'Run mutation tests with Stryker'
 
 # 12 Publish HTML + enable Mutation Report tab
-- task: mutationreportpublisher.mutation-report-publisher.publishmutationreport@1
+- task: mutation-report-publisher.publishmutationreport@0
   displayName: 'Publish Stryker Mutation Report'
   inputs:
     reportPattern: 'WMB.Api.Tests/StrykerOutput/mutation-report.html'
