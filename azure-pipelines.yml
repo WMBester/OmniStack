@@ -99,10 +99,10 @@ steps:
   # Publish Code Coverage Results
   - task: PublishCodeCoverageResults@2
     inputs:
-      codeCoverageTool: 'Cobertura'
-      summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/**/coverage.opencover.xml'
-      reportDirectory: '$(Build.SourcesDirectory)/TestResults'
-      failIfCoverageEmpty: true
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults/**/coverage.opencover.xml'
+    reportDirectory: '$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults'
+    failIfCoverageEmpty: true
 
   # Run Mutation Tests with Stryker
   - script: |
