@@ -1,0 +1,16 @@
+.git
+.gitignore
+.vscode
+*.user
+*.pfx
+*.env
+*.db
+*.md
+Dockerfile
+docker-compose*
+*.yml
+tests/
+TestResults/
+bin/
+obj/
+coverage.opencover.xml
