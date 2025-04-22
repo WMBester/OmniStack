@@ -4,55 +4,58 @@ trigger:
 variables:
   - group: SonarCloudSecrets
   - name: buildConfiguration
-    value: 'Release'
+    value: Release
   - name: coverageOutputPath
     value: '$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults/coverage.opencover.xml'
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: windows‑latest
 
 steps:
-# ---------- toolchain ----------
+# ── Tooling ────────────────────────────────────────────────────────────────────
 - task: JavaToolInstaller@0
   inputs:
     versionSpec: '17'
-    jdkArchitectureOption: 'x64'
-  displayName: 'Install Java 17'
+    jdkArchitectureOption: x64
+    jdkSourceOption: PreInstalled
+  displayName: Install Java 17
 
 - task: UseDotNet@2
   inputs:
-    packageType: 'sdk'
-    version: '8.0.x'
-  displayName: 'Install .NET 8 SDK'
+    packageType: sdk
+    version: 8.0.x
+  displayName: Install .NET 8 SDK
 
-- powershell: |
+- pwsh: |
     Write‑Host "##vso[task.prependpath]$env:USERPROFILE\.dotnet\tools"
-  displayName: 'Add global‑tools path to PATH'
+  displayName: Add dotnet tools to PATH
 
-# ---------- restore + build once ----------
+# ── Restore & Build once (BEFORE tests) ───────────────────────────────────────
 - script: dotnet restore OmniStack.sln
-  displayName: 'Restore'
+  displayName: Restore projects
 
-# ---------- SonarCloud ----------
+# ── SonarCloud begin ──────────────────────────────────────────────────────────
 - script: dotnet tool install -g dotnet-sonarscanner
-  displayName: 'Install SonarScanner CLI'
+  displayName: Install SonarScanner CLI
 
-- script: >
-    dotnet sonarscanner begin
-    /k:"Morneb_OmniStack"
-    /o:"morneb"
-    /d:sonar.login="$(SONAR_TOKEN)"
-    /d:sonar.host.url="https://sonarcloud.io"
-    /d:sonar.scm.disabled=true
-    /d:sonar.scanner.skipJreProvisioning=true
-    /d:sonar.cs.opencover.reportsPaths="$(coverageOutputPath)"
-    /d:sonar.exclusions="**/WMB.Api.Tests/**/*,**/k6-tests/**/*,**/*.yml"
-  displayName: 'SonarCloud ‑ begin'
+- script: |
+    dotnet sonarscanner begin `
+      /k:"Morneb_OmniStack" `
+      /o:"morneb" `
+      /d:sonar.login="$(SONAR_TOKEN)" `
+      /d:sonar.host.url="https://sonarcloud.io" `
+      /d:sonar.cs.opencover.reportsPaths="$(coverageOutputPath)" `
+      /d:sonar.scm.disabled=true `
+      /d:sonar.scanner.skipJreProvisioning=true `
+      /d:sonar.exclusions="**/WMB.Api.Tests/**/*,**/k6-tests/**/*,**/*.yml"
+  displayName: Sonar Begin
+  env:
+    SONAR_TOKEN: $(SONAR_TOKEN)
 
 - script: dotnet build OmniStack.sln --configuration $(buildConfiguration)
-  displayName: 'Build (after Sonar begin)'
+  displayName: Build solution
 
-# ---------- test + coverage ----------
+# ── Test + coverage ───────────────────────────────────────────────────────────
 - script: >
     dotnet test OmniStack.sln
     --configuration $(buildConfiguration)
@@ -60,35 +63,39 @@ steps:
     /p:CollectCoverage=true
     /p:CoverletOutputFormat=opencover
     /p:CoverletOutput=$(coverageOutputPath)
-  displayName: 'Run tests & collect coverage'
+  displayName: Run tests with coverage
 
+# ── SonarCloud end ────────────────────────────────────────────────────────────
 - script: dotnet sonarscanner end /d:sonar.login="$(SONAR_TOKEN)"
-  displayName: 'SonarCloud ‑ end'
+  displayName: Sonar End
+  env:
+    SONAR_TOKEN: $(SONAR_TOKEN)
 
+# ── Publish coverage to the “Code coverage” tab ───────────────────────────────
 - task: PublishCodeCoverageResults@2
-  displayName: 'Publish coverage'
+  displayName: Publish coverage
   inputs:
     codeCoverageTool: Cobertura
     summaryFileLocation: '$(coverageOutputPath)'
     reportDirectory: '$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults'
     failIfCoverageEmpty: true
 
-# ---------- Stryker ----------
+# ── Stryker ───────────────────────────────────────────────────────────────────
 - script: |
     dotnet tool install -g dotnet-stryker
-    dotnet stryker ^
-      --solution ../OmniStack.sln ^
-      --reporter html ^
-      --reporter progress ^
-      --output StrykerOutput ^
-      --threshold-high 80 ^
-      --threshold-low 60
-  workingDirectory: 'WMB.Api.Tests'
-  displayName: 'Run mutation tests (Stryker)'
+    dotnet stryker --solution ../OmniStack.sln ^
+                   --reporter html --reporter progress ^
+                   --output StrykerOutput ^
+                   --threshold-high 80 --threshold-low 60
+  workingDirectory: WMB.Api.Tests
+  displayName: Run Stryker mutation tests
 
-# ---------- publish HTML for the tab ----------
-- task: mutationreportpublisher.mutation-report-publisher.publish-mutation-report@1
-  displayName: 'Publish Stryker mutation report'
+# ── Publish the HTML report & light up the “Mutation Report” tab ──────────────
+#   👉 task name exactly as shown in the extension docs:
+#      https://marketplace.visualstudio.com/items?itemName=stryker-mutator.mutation-report-publisher
+- task: PublishMutationReport@1
+  displayName: Publish Stryker Mutation Report
   inputs:
-    reportPattern: 'WMB.Api.Tests/StrykerOutput/**/mutation-report.html'   # glob inside output folder
-    reportDisplayName: 'Stryker Mutation Report'
+    reportPattern: 'WMB.Api.Tests/StrykerOutput/mutation-report.html'
+    reportDisplayName: 'Mutation Testing ( Stryker )'
+
