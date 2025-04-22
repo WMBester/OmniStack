@@ -80,7 +80,7 @@ steps:
       DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
       PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
 
-  - task: mutationreportpublisher.mutation-report-publisher.publish-mutation-report.publish-mutation-report@1
+  - task: PublishMutationReport@1
     displayName: 'Publish Stryker Mutation Report'
     inputs:
       reportPattern: 'WMB.Api.Tests/StrykerOutput/mutation-report.html'
