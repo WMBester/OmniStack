@@ -2,117 +2,101 @@ trigger:
   - '*'
 
 variables:
-  - group: SonarCloudSecrets          # contains SONAR_TOKEN
+  - group: SonarCloudSecrets
   - name: buildConfiguration
     value: 'Release'
-  - name: coverageOutputPath          # one single place → used by all steps
+  - name: coverageOutputPath
     value: '$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults/coverage.opencover.xml'
 
 pool:
-  vmImage: 'windows‑latest'
+  vmImage: 'windows-latest'
 
-# ───────────────────────────────────────────────────────────────────────────────
-# Tool‑chain
-# ───────────────────────────────────────────────────────────────────────────────
 steps:
-# Java is needed by the SonarCloud scanner
+# 1 Java (required by SonarCloud)
 - task: JavaToolInstaller@0
-  displayName: 'Install Java 17 (for Sonar scanner)'
   inputs:
     versionSpec: '17'
     jdkArchitectureOption: 'x64'
     jdkSourceOption: 'PreInstalled'
+  displayName: 'Install Java 17'
 
-# .NET SDK used by restore / build / test / Stryker
+# 2 .NET SDK
 - task: UseDotNet@2
-  displayName: 'Install .NET 8 SDK'
   inputs:
-    packageType: 'sdk'
+    packageType: sdk
     version: '8.0.x'
+  displayName: 'Install .NET 8 SDK'
 
-# Expose dotnet‑tool global location so subsequent steps can execute installed tools
-- pwsh: |
-    "$env:USERPROFILE\.dotnet\tools" | % { "##vso[task.prependpath]$_" }
-  displayName: 'Expose global dotnet‑tools on PATH'
+# 3 Add dotnet‑tools directory to PATH
+- powershell: |
+    $dotnetTools = "$env:USERPROFILE\.dotnet\tools"
+    Write-Host "##vso[task.prependpath]$dotnetTools"
+  displayName: 'Add dotnet global tools path'
 
-# ───────────────────────────────────────────────────────────────────────────────
-# Restore ➜ Sonar BEGIN ➜ Build ➜ Test + coverage ➜ Sonar END
-# (Sonar *requires* the build to happen between BEGIN/END)
-# ───────────────────────────────────────────────────────────────────────────────
+# 4 Restore
 - script: dotnet restore OmniStack.sln
-  displayName: 'Restore NuGet packages'
+  displayName: 'Restore projects'
 
-- script: dotnet tool install -g dotnet-sonarscanner
+# 5 Install SonarScanner CLI (global tool)
+- script: dotnet tool install --global dotnet-sonarscanner
   displayName: 'Install SonarScanner CLI'
 
-# --- Sonar BEGIN ---
-- script: |
-    dotnet sonarscanner begin `
-      /k:"Morneb_OmniStack" `
-      /o:"morneb" `
-      /d:sonar.login="$(SONAR_TOKEN)" `
-      /d:sonar.host.url="https://sonarcloud.io" `
-      /d:sonar.scm.disabled=true `
-      /d:sonar.scanner.skipJreProvisioning=true `
-      /d:sonar.cs.opencover.reportsPaths="$(coverageOutputPath)" `
-      /d:sonar.exclusions="**/WMB.Api.Tests/**/*,**/k6-tests/**/*,**/*.yml"
+# 6 Sonar Begin
+- script: >
+    dotnet sonarscanner begin
+    /k:"Morneb_OmniStack"
+    /o:"morneb"
+    /d:sonar.login="$(SONAR_TOKEN)"
+    /d:sonar.host.url="https://sonarcloud.io"
+    /d:sonar.scm.disabled=true
+    /d:sonar.scanner.skipJreProvisioning=true
+    /d:sonar.cs.opencover.reportsPaths="$(coverageOutputPath)"
+    /d:sonar.exclusions="**/WMB.Api.Tests/**/*,**/k6-tests/**/*,**/*.yml"
   displayName: 'SonarCloud – Begin analysis'
 
-# Build **once** inside the begin/end window
-- script: dotnet build OmniStack.sln --configuration $(buildConfiguration) --no-restore
-  displayName: 'Build solution (Release)'
+# 7 Build (once, inside the begin/end block)
+- script: dotnet build OmniStack.sln --configuration $(buildConfiguration)
+  displayName: 'Build projects'
 
-# Run tests + collect coverage in *the same* folder every run
-- script: |
-    dotnet test OmniStack.sln `
-      --configuration $(buildConfiguration) `
-      --no-build `
-      /p:CollectCoverage=true `
-      /p:CoverletOutputFormat=opencover `
-      /p:CoverletOutput=$(coverageOutputPath)
-  displayName: 'Run unit tests & collect coverage'
+# 8 Test + coverage
+- script: >
+    dotnet test OmniStack.sln
+    --configuration $(buildConfiguration)
+    --no-build
+    /p:CollectCoverage=true
+    /p:CoverletOutputFormat=opencover
+    /p:CoverletOutput=$(coverageOutputPath)
+  displayName: 'Run tests & collect coverage'
 
-# --- Sonar END ---
+# 9 Sonar End
 - script: dotnet sonarscanner end /d:sonar.login="$(SONAR_TOKEN)"
   displayName: 'SonarCloud – End analysis'
 
-# ───────────────────────────────────────────────────────────────────────────────
-# Publish Cobertura coverage so Azure DevOps shows the **Code Coverage** tab
-# ───────────────────────────────────────────────────────────────────────────────
+# 10 Publish code‑coverage tab
 - task: PublishCodeCoverageResults@2
-  displayName: 'Publish Cobertura coverage'
+  displayName: 'Publish Code Coverage Results'
   inputs:
-    codeCoverageTool: 'Cobertura'
+    codeCoverageTool: Cobertura
     summaryFileLocation: '$(coverageOutputPath)'
     reportDirectory: '$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults'
     failIfCoverageEmpty: true
 
-# ───────────────────────────────────────────────────────────────────────────────
-# Mutation testing with Stryker
-# ───────────────────────────────────────────────────────────────────────────────
-- script: |
-    dotnet tool install -g dotnet-stryker
-    dotnet stryker `
-      --solution ../OmniStack.sln `
-      --reporter html `
-      --reporter progress `
-      --output StrykerOutput `
-      --threshold-high 80 `
-      --threshold-low 60
+# 11 Run Stryker
+- script: >
+    dotnet tool install --global dotnet-stryker
+    && dotnet stryker
+       --solution ../OmniStack.sln
+       --reporter html
+       --reporter progress
+       --output StrykerOutput
+       --threshold-high 80
+       --threshold-low 60
   workingDirectory: 'WMB.Api.Tests'
   displayName: 'Run mutation tests with Stryker'
 
-# Publish the HTML report as an artifact (optional download)
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Stryker HTML artifact'
+# 12 Publish HTML + enable Mutation Report tab
+- task: mutationreportpublisher.mutation-report-publisher.publishmutationreport@1
+  displayName: 'Publish Stryker Mutation Report'
   inputs:
-    PathtoPublish: 'WMB.Api.Tests/StrykerOutput'
-    ArtifactName: 'StrykerMutationReport'
-    publishLocation: 'Container'
-
-# Publish the report so the **Mutation Report** tab appears in the build UI
-- task: PublishMutationReport@1          # ← exact alias as documented by the extension
-  displayName: 'Attach Stryker Mutation Report tab'
-  inputs:
-    reportPattern: 'WMB.Api.Tests/StrykerOutput/**/mutation-report.html'
-    reportDisplayName: 'Stryker Mutation Report'
+    reportPattern: 'WMB.Api.Tests/StrykerOutput/mutation-report.html'
+    reportDisplayName: 'Stryker Mutation Report'
