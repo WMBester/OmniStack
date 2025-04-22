@@ -73,7 +73,7 @@ steps:
 
   - script: |
       dotnet tool install --global dotnet-stryker
-      dotnet stryker --solution ../OmniStack.sln --reporter html --reporter progress --output-path StrykerOutput --threshold-high 80 --threshold-low 60
+      dotnet stryker --solution ../OmniStack.sln --reporter html --reporter progress --output StrykerOutput --threshold-high 80 --threshold-low 60
     workingDirectory: 'WMB.Api.Tests'
     displayName: 'Run mutation tests with Stryker'
     env:
