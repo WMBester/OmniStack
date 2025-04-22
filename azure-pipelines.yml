@@ -98,5 +98,5 @@ steps:
 - task: PublishMutationReport@2
   displayName: 'Publish Stryker Mutation Report'
   inputs:
-    reportPattern: 'WMB.Api.Tests/StrykerOutput/mutation-report.html'
+    reportPattern: 'WMB.Api.Tests/StrykerOutput/**/mutation-report.html'
     reportDisplayName: 'Stryker Mutation Report'
