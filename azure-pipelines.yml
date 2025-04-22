@@ -56,11 +56,6 @@ steps:
       dotnet test OmniStack.sln --configuration $(buildConfiguration) --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=$(coverageOutputPath)
     displayName: 'Run tests for SonarCloud coverage'
 
-  - powershell: |
-      Write-Host "Listing coverage file path for verification"
-      Get-ChildItem -Path "$(coverageOutputPath)" -ErrorAction SilentlyContinue | Format-List FullName, Length, LastWriteTime
-    displayName: 'Debug: Verify coverage.opencover.xml existence'
-
   - script: |
       dotnet sonarscanner end /d:sonar.login="$(SONAR_TOKEN)"
     displayName: 'SonarCloud End Analysis'
@@ -85,9 +80,9 @@ steps:
       DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
       PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
 
-  - task: PublishPipelineArtifact@1
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Stryker HTML Report'
     inputs:
-      targetPath: 'WMB.Api.Tests/StrykerOutput'
-      artifact: 'StrykerReport'
-      publishLocation: 'pipeline'
-    displayName: 'Publish Stryker mutation testing report'
+      PathtoPublish: 'WMB.Api.Tests/StrykerOutput'
+      ArtifactName: 'StrykerMutationReport'
+      publishLocation: 'Container'
