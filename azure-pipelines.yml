@@ -32,33 +32,20 @@ steps:
     displayName: 'Add dotnet global tools path to PATH'
 
   # Restore projects
-  - script: |
-      dotnet restore OmniStack.sln
+  - script: dotnet restore OmniStack.sln
     displayName: 'Restore projects'
 
   # Build projects
-  - script: |
-      dotnet build OmniStack.sln --configuration $(buildConfiguration)
+  - script: dotnet build OmniStack.sln --configuration $(buildConfiguration)
     displayName: 'Build projects'
 
-  # Run tests with coverage
+  # Run tests with coverage (used by Sonar and report publishing)
   - script: |
-      dotnet test OmniStack.sln --configuration $(buildConfiguration) --verbosity normal --settings coverlet.runsettings
-    displayName: 'Run tests with coverage'
-
-  # List TestResults directory contents for debugging
-  - powershell: |
-      Get-ChildItem -Path "$(Build.SourcesDirectory)/TestResults" -Recurse
-    displayName: 'List TestResults directory contents'
-
-  # List entire WMB.Api.Tests directory contents for debugging
-  - powershell: |
-      Get-ChildItem -Path "$(Build.SourcesDirectory)/WMB.Api.Tests" -Recurse
-    displayName: 'List WMB.Api.Tests directory contents'
+      dotnet test OmniStack.sln --configuration $(buildConfiguration) --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=WMB.Api.Tests/TestResults/
+    displayName: 'Run tests and collect coverage'
 
   # Install SonarScanner CLI
-  - script: |
-      dotnet tool install --global dotnet-sonarscanner
+  - script: dotnet tool install --global dotnet-sonarscanner
     displayName: 'Install SonarScanner CLI'
     env:
       DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
@@ -66,31 +53,28 @@ steps:
 
   # SonarCloud Begin Analysis
   - script: |
-      dotnet sonarscanner begin /k:"Morneb_OmniStack" /o:"morneb" /d:sonar.login="$(SONAR_TOKEN)" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scm.disabled=true /d:sonar.scanner.skipJreProvisioning=true /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.opencover.xml" /d:sonar.exclusions="WMB.Api.Tests/**,k6-tests/**,azure-pipelines.yml"
+      dotnet sonarscanner begin /k:"Morneb_OmniStack" /o:"morneb" /d:sonar.login="$(SONAR_TOKEN)" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scm.disabled=true /d:sonar.scanner.skipJreProvisioning=true /d:sonar.cs.opencover.reportsPaths="WMB.Api.Tests/TestResults/**/coverage.opencover.xml" /d:sonar.exclusions="WMB.Api.Tests/**,k6-tests/**,azure-pipelines.yml"
     displayName: 'SonarCloud Begin Analysis'
     env:
       DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
       PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
 
-  # Build projects
-  - script: |
-      dotnet build OmniStack.sln --configuration $(buildConfiguration)
-    displayName: 'Build projects'
+  # Rebuild after Sonar start
+  - script: dotnet build OmniStack.sln --configuration $(buildConfiguration)
+    displayName: 'Build projects (Sonar stage)'
     env:
       DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
       PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
 
-  # Run tests with coverage
-  - script: |
-      dotnet test OmniStack.sln --configuration $(buildConfiguration) --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=TestResults/coverage.xml
-    displayName: 'Run tests with coverage'
+  # Re-run tests for Sonar (without coverage collection again)
+  - script: dotnet test OmniStack.sln --configuration $(buildConfiguration) --verbosity normal --no-build
+    displayName: 'Run tests (Sonar stage)'
     env:
       DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
       PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
 
   # SonarCloud End Analysis
-  - script: |
-      dotnet sonarscanner end /d:sonar.login="$(SONAR_TOKEN)"
+  - script: dotnet sonarscanner end /d:sonar.login="$(SONAR_TOKEN)"
     displayName: 'SonarCloud End Analysis'
     env:
       DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
@@ -98,11 +82,12 @@ steps:
 
   # Publish Code Coverage Results
   - task: PublishCodeCoverageResults@2
+    displayName: 'Publish Code Coverage Results'
     inputs:
-    codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults/**/coverage.opencover.xml'
-    reportDirectory: '$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults'
-    failIfCoverageEmpty: true
+      codeCoverageTool: 'Cobertura'
+      summaryFileLocation: '$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults/**/coverage.opencover.xml'
+      reportDirectory: '$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults'
+      failIfCoverageEmpty: true
 
   # Run Mutation Tests with Stryker
   - script: |
@@ -116,8 +101,8 @@ steps:
 
   # Publish Stryker HTML Report
   - task: PublishPipelineArtifact@1
+    displayName: 'Publish Stryker mutation testing report'
     inputs:
       targetPath: 'WMB.Api.Tests/StrykerOutput'
       artifact: 'StrykerReport'
       publishLocation: 'pipeline'
-    displayName: 'Publish Stryker mutation testing report'
