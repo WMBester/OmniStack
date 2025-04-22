@@ -32,8 +32,7 @@ steps:
 
   - script: |
       dotnet restore OmniStack.sln
-      dotnet build OmniStack.sln --configuration $(buildConfiguration)
-    displayName: 'Restore and build projects'
+    displayName: 'Restore projects'
 
   - script: |
       dotnet tool install --global dotnet-sonarscanner
@@ -48,6 +47,10 @@ steps:
     env:
       DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
       PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
+
+  - script: |
+      dotnet build OmniStack.sln --configuration $(buildConfiguration)
+    displayName: 'Build projects (after Sonar Begin)'
 
   - script: |
       dotnet test OmniStack.sln --configuration $(buildConfiguration) --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=$(coverageOutputPath)
