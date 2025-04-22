@@ -37,7 +37,7 @@ steps:
 - script: dotnet restore OmniStack.sln
   displayName: 'Restore projects'
 
-# 5 Install SonarScanner CLI (global tool)
+# 5 Install SonarScanner CLI
 - script: dotnet tool install --global dotnet-sonarscanner
   displayName: 'Install SonarScanner CLI'
 
@@ -54,7 +54,7 @@ steps:
     /d:sonar.exclusions="**/WMB.Api.Tests/**/*,**/k6-tests/**/*,**/*.yml"
   displayName: 'SonarCloud – Begin analysis'
 
-# 7 Build (once, inside the begin/end block)
+# 7 Build once
 - script: dotnet build OmniStack.sln --configuration $(buildConfiguration)
   displayName: 'Build projects'
 
@@ -81,16 +81,16 @@ steps:
     reportDirectory: '$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults'
     failIfCoverageEmpty: true
 
-# 11 Run Stryker
-- script: >
-    dotnet tool install --global dotnet-stryker
-    && dotnet stryker
-       --solution ../OmniStack.sln
-       --reporter html
-       --reporter progress
-       --output StrykerOutput
-       --threshold-high 80
-       --threshold-low 60
+# 11 Run Stryker – PowerShell block so line breaks work
+- powershell: |
+    dotnet tool install -g dotnet-stryker
+    dotnet stryker `
+      --solution ../OmniStack.sln `
+      --reporter html `
+      --reporter progress `
+      --output StrykerOutput `
+      --threshold-high 80 `
+      --threshold-low 60
   workingDirectory: 'WMB.Api.Tests'
   displayName: 'Run mutation tests with Stryker'
 
