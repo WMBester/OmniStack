@@ -5,6 +5,8 @@ variables:
   - group: SonarCloudSecrets
   - name: buildConfiguration
     value: 'Release'
+  - name: coverageOutputPath
+    value: '$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults/coverage.opencover.xml'
 
 pool:
   vmImage: 'windows-latest'
@@ -30,11 +32,8 @@ steps:
 
   - script: |
       dotnet restore OmniStack.sln
-    displayName: 'Restore projects'
-
-  - script: |
       dotnet build OmniStack.sln --configuration $(buildConfiguration)
-    displayName: 'Build projects'
+    displayName: 'Restore and build projects'
 
   - script: |
       dotnet tool install --global dotnet-sonarscanner
@@ -44,23 +43,19 @@ steps:
       PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
 
   - script: |
-      dotnet sonarscanner begin /k:"Morneb_OmniStack" /o:"morneb" /d:sonar.login="$(SONAR_TOKEN)" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scm.disabled=true /d:sonar.scanner.skipJreProvisioning=true /d:sonar.cs.opencover.reportsPaths="$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults/coverage.opencover.xml" /d:sonar.exclusions="**/WMB.Api.Tests/**/*,**/k6-tests/**/*,**/*.yml"
+      dotnet sonarscanner begin /k:"Morneb_OmniStack" /o:"morneb" /d:sonar.login="$(SONAR_TOKEN)" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scm.disabled=true /d:sonar.scanner.skipJreProvisioning=true /d:sonar.cs.opencover.reportsPaths="$(coverageOutputPath)" /d:sonar.exclusions="**/WMB.Api.Tests/**/*,**/k6-tests/**/*,**/*.yml"
     displayName: 'SonarCloud Begin Analysis'
     env:
       DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
       PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
 
   - script: |
-      dotnet build OmniStack.sln --configuration $(buildConfiguration)
-    displayName: 'Rebuild for Sonar'
-
-  - script: |
-      dotnet test OmniStack.sln --configuration $(buildConfiguration) --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=WMB.Api.Tests/TestResults/coverage.opencover.xml
+      dotnet test OmniStack.sln --configuration $(buildConfiguration) --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=$(coverageOutputPath)
     displayName: 'Run tests for SonarCloud coverage'
 
   - powershell: |
       Write-Host "Listing coverage file path for verification"
-      Get-ChildItem -Recurse -Path "$(Build.SourcesDirectory)" -Include "coverage.opencover.xml"
+      Get-ChildItem -Path "$(coverageOutputPath)" -ErrorAction SilentlyContinue | Format-List FullName, Length, LastWriteTime
     displayName: 'Debug: Verify coverage.opencover.xml existence'
 
   - script: |
@@ -74,7 +69,7 @@ steps:
     displayName: 'Publish Code Coverage Results'
     inputs:
       codeCoverageTool: 'Cobertura'
-      summaryFileLocation: '$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults/coverage.opencover.xml'
+      summaryFileLocation: '$(coverageOutputPath)'
       reportDirectory: '$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults'
       failIfCoverageEmpty: true
 
