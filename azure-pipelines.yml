@@ -18,9 +18,6 @@ stages:
   displayName: 'Mutation Testing with Stryker'
   dependsOn: []
   condition: false  # Disabled by default, run manually
-  approvals:
-    - name: 'Tester Approval'
-      reviewers:
-        - willemmorne@gmail.com 
+  environment: 'stryker-approval-env'
   jobs:
   - template: stryker.yml
