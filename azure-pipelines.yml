@@ -17,7 +17,14 @@ stages:
 - stage: Stryker
   displayName: 'Mutation Testing with Stryker'
   dependsOn: []
-  condition: false  # Disabled by default, run manually
-  environment: 'stryker-approval-env'
+  condition: always()
+
   jobs:
-  - template: stryker.yml
+  - deployment: RunStryker
+    displayName: 'Run Stryker Tests with Approval'
+    environment: 'stryker-approval-env'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: stryker.yml
