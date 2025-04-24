@@ -1,0 +1,25 @@
+steps:
+- checkout: self  # This is essential in a deployment job!
+
+- script: dotnet tool install --global dotnet-stryker
+  displayName: 'Install Stryker'
+
+- script: >
+    dotnet stryker
+    --solution OmniStack.sln
+    --reporter html
+    --reporter progress
+    --output WMB.Api.Tests/StrykerOutput
+    --threshold-high 80
+    --threshold-low 60
+  workingDirectory: '$(System.DefaultWorkingDirectory)'
+  displayName: 'Run mutation tests with Stryker'
+  env:
+    DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
+    PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
+
+- task: PublishMutationReport@2
+  displayName: 'Publish Stryker Mutation Report'
+  inputs:
+    reportPattern: 'WMB.Api.Tests/StrykerOutput/**/mutation-report.html'
+    reportDisplayName: 'Stryker Mutation Report'
