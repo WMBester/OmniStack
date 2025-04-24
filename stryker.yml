@@ -1,26 +1,26 @@
 steps:
-  - checkout: self  # This is essential in a deployment job!
+- checkout: self  # This is essential in a deployment job!
 
-  - script: dotnet tool install --global dotnet-stryker
-    displayName: 'Install Stryker'
+- script: dotnet tool install --global dotnet-stryker
+  displayName: 'Install Stryker'
 
-  - script: >
-      dotnet stryker
-      --solution OmniStack.sln
-      --reporter html
-      --reporter progress
-      --output WMB.Api.Tests/StrykerOutput
-      --threshold-high 80
-      --threshold-low 60
-    workingDirectory: 'WMB.Api.Tests'
-    displayName: 'Run mutation tests with Stryker'
-    env:
-      DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
-      PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
+- script: >
+    dotnet stryker
+    --solution OmniStack.sln
+    --reporter html
+    --reporter progress
+    --output WMB.Api.Tests/StrykerOutput
+    --threshold-high 80
+    --threshold-low 60
+  workingDirectory: 'WMB.Api.Tests'
+  displayName: 'Run mutation tests with Stryker'
+  env:
+    DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
+    PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Stryker Mutation Report'
-    inputs:
-      PathtoPublish: 'WMB.Api.Tests/StrykerOutput'
-      ArtifactName: 'StrykerMutationReport'
-      publishLocation: 'Container'
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Stryker Mutation Report'
+  inputs:
+    PathtoPublish: 'WMB.Api.Tests/StrykerOutput'
+    ArtifactName: 'StrykerMutationReport'
+    publishLocation: 'Container'
