@@ -1,23 +1,23 @@
-jobs:
-- job: StrykerMutationTest
-  displayName: 'Run mutation tests with Stryker'
-  pool:
-    vmImage: 'windows-latest'
-  steps:
-  - powershell: |
-      dotnet tool install -g dotnet-stryker
-      dotnet stryker `
-        --solution ../OmniStack.sln `
-        --reporter html `
-        --reporter progress `
-        --output StrykerOutput `
-        --threshold-high 80 `
-        --threshold-low 60
-    workingDirectory: 'WMB.Api.Tests'
-    displayName: 'Run mutation tests with Stryker'
+- script: dotnet tool install --global dotnet-stryker
+  displayName: 'Install Stryker'
 
-  - task: PublishMutationReport@2
-    displayName: 'Publish Stryker Mutation Report'
-    inputs:
-      reportPattern: 'WMB.Api.Tests/StrykerOutput/**/mutation-report.html'
-      reportDisplayName: 'Stryker Mutation Report'
+- script: >
+    dotnet stryker
+    --solution ../OmniStack.sln
+    --reporter html
+    --reporter progress
+    --output StrykerOutput
+    --threshold-high 80
+    --threshold-low 60
+  workingDirectory: 'WMB.Api.Tests'
+  displayName: 'Run mutation tests with Stryker'
+  env:
+    DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
+    PATH: $(Agent.ToolsDirectory)/dotnet;$(USERPROFILE)\.dotnet\tools;$(PATH)
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Stryker Mutation Report'
+  inputs:
+    PathtoPublish: 'WMB.Api.Tests/StrykerOutput'
+    ArtifactName: 'StrykerMutationReport'
+    publishLocation: 'Container'
