@@ -12,7 +12,7 @@ steps:
     --output WMB.Api.Tests/StrykerOutput
     --threshold-high 80
     --threshold-low 60
-  workingDirectory: 'WMB.Api.Tests'
+  workingDirectory: '$(System.DefaultWorkingDirectory)'
   displayName: 'Run mutation tests with Stryker'
   env:
     DOTNET_ROOT: $(Agent.ToolsDirectory)/dotnet
