@@ -1,3 +1,4 @@
+steps:
 - script: dotnet tool install --global dotnet-stryker
   displayName: 'Install Stryker'
 
