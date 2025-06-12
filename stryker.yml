@@ -10,8 +10,7 @@ steps:
     --reporter html
     --reporter progress
     --output WMB.Api.Tests/StrykerOutput
-    --threshold-low 80
-    --break
+    --break-at 80
   workingDirectory: '$(System.DefaultWorkingDirectory)'
   displayName: 'Run mutation tests with Stryker'
   env:
