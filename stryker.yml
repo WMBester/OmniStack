@@ -23,3 +23,10 @@ steps:
   inputs:
     reportPattern: 'WMB.Api.Tests/StrykerOutput/**/mutation-report.html'
     reportDisplayName: 'Stryker Mutation Report'
+
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish mutation-report.json'
+  condition: always()
+  inputs:
+    targetPath: 'WMB.Api.Tests/StrykerOutput/**/mutation-report.json'
+    artifact: 'mutation-json'

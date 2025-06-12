@@ -27,3 +27,44 @@ stages:
         deploy:
           steps:
           - template: stryker.yml
+
+- stage: AIMutationReview
+  displayName: 'AI Review of Survived Mutants'
+  dependsOn: Stryker
+  condition: succeededOrFailed()
+  variables:
+  - group: OpenAISecrets
+  jobs:
+  - job: AIReview
+    displayName: 'Run AI Mutation Review Script'
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.x'
+
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifactName: 'mutation-json'
+        targetPath: '$(Pipeline.Workspace)/mutation'
+
+    - script: |
+        python -m pip install --upgrade pip
+        pip install openai
+      displayName: 'Install Python Dependencies'
+
+    - script: |
+        python scripts/ai_mutation_reviewer.py \
+          --json "$(Pipeline.Workspace)/mutation/mutation-report.json" \
+          --output "$(Build.ArtifactStagingDirectory)/mutation_review.md"
+      env:
+        OPENAI_API_KEY: $(OPENAI_API_KEY)
+      displayName: 'Run AI Mutation Review'
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish AI Mutation Review Report'
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)/mutation_review.md'
+        artifact: 'ai-mutation-review'
