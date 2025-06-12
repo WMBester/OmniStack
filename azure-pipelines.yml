@@ -18,7 +18,6 @@ stages:
   displayName: 'Mutation Testing with Stryker'
   dependsOn: []
   condition: always()
-
   jobs:
   - deployment: RunStryker
     displayName: 'Run Stryker Tests with Approval'
