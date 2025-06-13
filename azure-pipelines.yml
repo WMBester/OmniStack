@@ -47,7 +47,7 @@ stages:
 
     - task: DownloadPipelineArtifact@2
       inputs:
-        artifactName: 'StrykerOutput'
+        artifactName: 'mutation-json'
         targetPath: '$(Pipeline.Workspace)/mutation'
 
     - script: |
