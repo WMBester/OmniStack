@@ -47,7 +47,7 @@ stages:
 
     - task: DownloadPipelineArtifact@2
       inputs:
-        artifactName: 'mutation-json'
+        artifactName: 'StrykerOutput'
         targetPath: '$(Pipeline.Workspace)/mutation'
 
     - script: |
@@ -56,8 +56,8 @@ stages:
       displayName: 'Install Python Dependencies'
 
     - script: |
-        python scripts/ai_mutation_reviewer.py \
-          --json "$(Pipeline.Workspace)/mutation/mutation-report.json" \
+        python ai_mutation_reviewer.py \
+          --json "$(Pipeline.Workspace)/mutation/StrykerOutput/mutation-report.json" \
           --output "$(Build.ArtifactStagingDirectory)/mutation_review.md"
       env:
         OPENAI_API_KEY: $(OPENAI_API_KEY)
