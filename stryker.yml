@@ -28,5 +28,5 @@ steps:
   displayName: 'Publish mutation-report.json'
   condition: always()
   inputs:
-    targetPath: 'WMB.Api.Tests/StrykerOutput/**/mutation-report.json'
+    targetPath: 'WMB.Api.Tests/StrykerOutput/mutation-report.json'
     artifact: 'mutation-json'
