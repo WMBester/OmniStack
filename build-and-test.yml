@@ -44,13 +44,13 @@ jobs:
     displayName: 'Build projects'
 
   - script: >
-      dotnet test OmniStack.sln
+      dotnet test WMB.Api.Tests/WMB.Api.Tests.csproj
       --configuration Release
       --no-build
       /p:CollectCoverage=true
       /p:CoverletOutputFormat=opencover
       /p:CoverletOutput=$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults/coverage.opencover.xml
-    displayName: 'Run tests & collect coverage'
+    displayName: 'Run unit tests & collect coverage'
 
   - script: dotnet sonarscanner end /d:sonar.login="$(SONAR_TOKEN)"
     displayName: 'SonarCloud – End analysis'
