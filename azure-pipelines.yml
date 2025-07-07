@@ -14,6 +14,13 @@ stages:
   jobs:
   - template: build-and-test.yml
 
+- stage: RunIntegrationTests
+  displayName: 'Run Integration Tests'
+  dependsOn: BuildAndTest
+  condition: succeeded()
+  jobs:
+  - template: Run-Integration-Tests.yml
+
 - stage: Stryker
   displayName: 'Mutation Testing with Stryker'
   dependsOn: []

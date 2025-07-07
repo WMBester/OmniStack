@@ -1,0 +1,45 @@
+trigger:
+  branches:
+    include:
+      - '*'
+
+pr:
+  branches:
+    include:
+      - master
+
+jobs:
+- job: RunIntegrationTests
+  displayName: 'Run API in Docker and Execute Integration Tests'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - script: |
+      echo "Building and starting API container using docker-compose"
+      docker-compose -f docker-compose.yml up -d --build api
+    displayName: 'Build and Start API Container'
+
+  - script: |
+      echo "Waiting for API container to be healthy"
+      for i in {1..30}; do
+        STATUS=$(docker inspect --format='{{.State.Health.Status}}' $(docker-compose -f docker-compose.yml ps -q api))
+        if [ "$STATUS" = "healthy" ]; then
+          echo "API container is healthy"
+          exit 0
+        fi
+        echo "Waiting for API container health... ($i/30)"
+        sleep 10
+      done
+      echo "API container did not become healthy in time"
+      exit 1
+    displayName: 'Wait for API Container Health'
+
+  - script: |
+      echo "Running integration tests"
+      dotnet test WMB.Api.IntegrationTests/WMB.Api.IntegrationTests.csproj --configuration Release --no-build
+    displayName: 'Run Integration Tests'
+
+  - script: |
+      echo "Stopping and removing API container"
+      docker-compose -f docker-compose.yml down
+    displayName: 'Cleanup Docker Containers'

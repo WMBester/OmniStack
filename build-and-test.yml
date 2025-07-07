@@ -44,7 +44,7 @@ jobs:
     displayName: 'Build projects'
 
   - script: >
-      dotnet test WMB.Api.Tests/WMB.Api.Tests.csproj
+      dotnet test WMB.Api.Tests/WMB.Api.Unit.Tests.csproj
       --configuration Release
       --no-build
       /p:CollectCoverage=true
