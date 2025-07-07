@@ -12,8 +12,10 @@ stages:
 - stage: BuildAndTest
   displayName: 'Build and Unit Test Execution'
   jobs:
-  - template: build-and-test.yml
-
+  - job: BuildAndTestJob
+    steps:
+      - script: echo "Build and Unit Test Execution steps go here"
+        displayName: 'Placeholder for build and test steps'
 - stage: Stryker
   displayName: 'Mutation Testing with Stryker'
   dependsOn: []
