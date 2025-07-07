@@ -22,6 +22,7 @@ RUN ls /app/publish
 
 # Use the official .NET 8 runtime image to run the application
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
+RUN apt-get update && apt-get install -y curl
 WORKDIR /app
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "WMB.Api.dll"]
