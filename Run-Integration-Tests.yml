@@ -31,6 +31,10 @@ jobs:
         sleep 10
       done
       echo "API container did not become healthy in time"
+
+      echo "Fetching API container logs for debugging:"
+      docker logs $CONTAINER_ID
+
       exit 1
     displayName: 'Wait for API Container Health'
 
