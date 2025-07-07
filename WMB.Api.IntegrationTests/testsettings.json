@@ -1,0 +1,4 @@
+﻿{
+  "BaseUrl": "http://localhost:5087/api",
+  "TimeoutSeconds": 30
+}

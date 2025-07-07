@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -9,10 +5,9 @@ using NUnit.Framework;
 using WMB.Api.DbContext;
 using WMB.Api.Models;
 using WMB.Api.Services;
-using EntityFrameworkCore.Testing.Moq;
 using WMB.Api.Tests;
 
-namespace WMB.Api.Tests.tests
+namespace WMB.Api.Unit.Tests.Tests
 {
     public class CreateAsyncTests : TestFixtureBase
     {

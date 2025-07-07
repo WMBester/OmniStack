@@ -1,108 +1,70 @@
-jobs:
-- job: Build
-  displayName: 'Build projects'
-  pool:
-    vmImage: 'windows-latest'
-  steps:
-  - task: JavaToolInstaller@0
-    inputs:
-      versionSpec: '17'
-      jdkArchitectureOption: 'x64'
-      jdkSourceOption: 'PreInstalled'
-    displayName: 'Install Java 17'
+trigger:
+  branches:
+    include:
+      - '*'
 
-  - task: UseDotNet@2
-    inputs:
-      packageType: sdk
-      version: '8.0.x'
-    displayName: 'Install .NET 8 SDK'
+pr:
+  branches:
+    include:
+      - master
 
-  - powershell: |
-      $dotnetTools = "$env:USERPROFILE\.dotnet\tools"
-      Write-Host "##vso[task.prependpath]$dotnetTools"
-    displayName: 'Add dotnet global tools path'
+stages:
+- stage: BuildAndTest
+  displayName: 'Build and Unit Test Execution'
+  jobs:
+  - template: build-and-test.yml
 
-  - script: dotnet restore OmniStack.sln
-    displayName: 'Restore projects'
+- stage: Stryker
+  displayName: 'Mutation Testing with Stryker'
+  dependsOn: []
+  condition: always()
+  jobs:
+  - deployment: RunStryker
+    displayName: 'Run Stryker Tests with Approval'
+    environment: 'stryker-approval-env'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: stryker.yml
 
-  - script: dotnet tool install --global dotnet-sonarscanner
-    displayName: 'Install SonarScanner CLI'
+- stage: AIMutationReview
+  displayName: 'AI Review of Survived Mutants'
+  dependsOn: Stryker
+  condition: succeededOrFailed()
+  variables:
+  - group: OpenAISecrets
+  jobs:
+  - job: AIReview
+    displayName: 'Run AI Mutation Review Script'
+    pool:
+      vmImage: 'ubuntu-latest'
 
-  - script: >
-      dotnet sonarscanner begin
-      /k:"Morneb_OmniStack"
-      /o:"morneb"
-      /d:sonar.login="$(SONAR_TOKEN)"
-      /d:sonar.host.url="https://sonarcloud.io"
-      /d:sonar.scm.disabled=true
-      /d:sonar.scanner.skipJreProvisioning=true
-      /d:sonar.cs.opencover.reportsPaths="$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults/coverage.opencover.xml"
-      /d:sonar.exclusions="**/WMB.Api.Tests/**/*,**/k6-tests/**/*,**/*.yml"
-    displayName: 'SonarCloud – Begin analysis'
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.x'
 
-  - script: dotnet build OmniStack.sln --configuration Release
-    displayName: 'Build projects'
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifactName: 'mutation-json'
+        targetPath: '$(Pipeline.Workspace)/mutation'
 
-  - script: >
-      dotnet test OmniStack.sln
-      --configuration Release
-      --no-build
-      /p:CollectCoverage=true
-      /p:CoverletOutputFormat=opencover
-      /p:CoverletOutput=$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults/coverage.opencover.xml
-    displayName: 'Run tests & collect coverage'
+    - script: |
+        python -m pip install --upgrade pip
+        pip install openai
+      displayName: 'Install Python Dependencies'
 
-  - script: dotnet sonarscanner end /d:sonar.login="$(SONAR_TOKEN)"
-    displayName: 'SonarCloud – End analysis'
+    - script: |
+        python ai_mutation_reviewer.py \
+          --json "$(Pipeline.Workspace)/mutation/mutation-report.json" \
+          --output "$(Build.ArtifactStagingDirectory)/mutation_review.md"
+      env:
+        OPENAI_API_KEY: $(OPENAI_API_KEY)
+      displayName: 'Run AI Mutation Review'
 
-  - task: PublishCodeCoverageResults@2
-    displayName: 'Publish Code Coverage Results'
-    inputs:
-      codeCoverageTool: Cobertura
-      summaryFileLocation: '$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults/coverage.opencover.xml'
-      reportDirectory: '$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults'
-      failIfCoverageEmpty: true
-
-  - powershell: |
-      Write-Host "Checking SonarCloud Quality Gate status..."
-      $projectKey = "Morneb_OmniStack"
-      $org = "morneb"
-      $token = "$(SONAR_TOKEN)"
-      $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("${token}:"))
-
-      $url = "https://sonarcloud.io/api/qualitygates/project_status?projectKey=$projectKey"
-
-      $attempts = 0
-      do {
-        $response = Invoke-RestMethod -Uri $url -Headers @{ Authorization = "Basic $base64AuthInfo" }
-        $status = $response.projectStatus.status
-        Write-Host "Quality Gate Status: $status"
-        if ($status -eq "PENDING") {
-          Start-Sleep -Seconds 5
-          $attempts++
-        }
-      } while ($status -eq "PENDING" -and $attempts -lt 10)
-
-      if ($status -ne "OK") {
-        Write-Error "SonarCloud Quality Gate FAILED. Blocking PR."
-        exit 1
-      } else {
-        Write-Host "SonarCloud Quality Gate PASSED"
-      }
-    displayName: 'Check SonarCloud Quality Gate Status'
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'refs/heads/master'))
-
-  - powershell: |
-      [xml]$coverage = Get-Content "$(Build.SourcesDirectory)/WMB.Api.Tests/TestResults/coverage.opencover.xml"
-      $lineCoverage = $coverage.coverage.'@line-rate'
-      $coveragePercent = [math]::Round([double]$lineCoverage * 100, 2)
-      Write-Host "Line Coverage: $coveragePercent%"
-
-      if ($coveragePercent -lt 80) {
-        Write-Error "Code coverage is below threshold (80%). Current: $coveragePercent%"
-        exit 1
-      } else {
-        Write-Host "Code coverage meets the threshold."
-      }
-    displayName: 'Enforce Code Coverage Threshold'
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'refs/heads/master'))
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish AI Mutation Review Report'
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)/mutation_review.md'
+        artifact: 'ai-mutation-review'
