@@ -40,8 +40,14 @@ jobs:
 
   - script: |
       echo "Running integration tests"
-      dotnet test WMB.Api.IntegrationTests/WMB.Api.IntegrationTests.csproj --configuration Release --no-build
+      dotnet test WMB.Api.IntegrationTests/WMB.Api.IntegrationTests.csproj --configuration Release --no-build --logger "trx;LogFileName=test_results.trx"
     displayName: 'Run Integration Tests'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: '**/test_results.trx'
+      testRunTitle: 'Integration Tests Results'
+    displayName: 'Publish Test Results'
 
   - script: |
       echo "Stopping and removing API container"
