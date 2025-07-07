@@ -5,6 +5,13 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
   - script: |
+      echo "Installing docker-compose"
+      sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+      sudo chmod +x /usr/local/bin/docker-compose
+      docker-compose --version
+    displayName: 'Install Docker Compose'
+
+  - script: |
       echo "Building and starting API container using docker-compose"
       docker-compose -f docker-compose.yml up -d --build api
     displayName: 'Build and Start API Container'
