@@ -39,8 +39,13 @@ jobs:
     displayName: 'Wait for API Container Health'
 
   - script: |
+      echo "Building integration test project"
+      dotnet build WMB.Api.IntegrationTests/WMB.Api.IntegrationTests.csproj --configuration Release
+    displayName: 'Build Integration Test Project'
+
+  - script: |
       echo "Running integration tests"
-      dotnet test WMB.Api.IntegrationTests/WMB.Api.IntegrationTests.csproj --configuration Release --no-build --logger "trx;LogFileName=test_results.trx"
+      dotnet test WMB.Api.IntegrationTests/WMB.Api.IntegrationTests.csproj --configuration Release --logger "trx;LogFileName=test_results.trx"
     displayName: 'Run Integration Tests'
 
   - task: PublishTestResults@2
