@@ -19,7 +19,10 @@ jobs:
   - script: |
       echo "Waiting for API container to be healthy"
       for i in {1..30}; do
-        STATUS=$(docker inspect --format='{{.State.Health.Status}}' $(docker-compose -f docker-compose.yml ps -q api))
+        CONTAINER_ID=$(docker-compose -f docker-compose.yml ps -q api)
+        echo "Container ID: $CONTAINER_ID"
+        STATUS=$(docker inspect --format='{{.State.Health.Status}}' $CONTAINER_ID)
+        echo "Health Status: $STATUS"
         if [ "$STATUS" = "healthy" ]; then
           echo "API container is healthy"
           exit 0
