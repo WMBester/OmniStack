@@ -1,13 +1,3 @@
-trigger:
-  branches:
-    include:
-      - '*'
-
-pr:
-  branches:
-    include:
-      - master
-
 jobs:
 - job: RunIntegrationTests
   displayName: 'Run API in Docker and Execute Integration Tests'
