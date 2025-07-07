@@ -2,13 +2,21 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-# Copy the project files and restore dependencies
+# Copy the solution file and restore dependencies
 COPY *.sln .
+
+# Copy the main API project files
 COPY OmniStack/WMB.Api.csproj ./OmniStack/
+COPY OmniStack/ ./OmniStack/
+
+# Copy the Integration Tests project files only
+COPY WMB.Api.IntegrationTests/WMB.Api.IntegrationTests.csproj ./WMB.Api.IntegrationTests/
+COPY WMB.Api.IntegrationTests/ ./WMB.Api.IntegrationTests/
+
+# Restore dependencies for the solution
 RUN dotnet restore
 
-# Copy the remaining files and build the application
-COPY . .
+# Build and publish the API project
 WORKDIR /app/OmniStack
 RUN dotnet publish -c Release -o /app/publish
 
